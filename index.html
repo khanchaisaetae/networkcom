@@ -1,1261 +1,1289 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Interactive Computer Network Virtual Lab</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Sarabun', 'sans-serif'],
-            mono: ['Fira Code', 'monospace'],
-            tech: ['Chakra Petch', 'sans-serif'],
-          },
-          colors: {
-            netdark: '#0d1117',
-            netcard: '#161b22',
-            netborder: '#30363d',
-            netblue: '#38bdf8',
-            netgreen: '#4ade80',
-            netamber: '#fbbf24',
-            netrose: '#fb7185',
-          }
-        }
-      }
-    }
-  </script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    /* Custom scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0d1117; }
-    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
-
-    @keyframes packetPulse {
-      0%, 100% { transform: scale(1); opacity: 0.9; }
-      50% { transform: scale(1.25); opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Sarabun:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Sarabun', sans-serif;
     }
-    .packet-glow {
-      animation: packetPulse 0.9s infinite ease-in-out;
+    .font-mono-code {
+      font-family: 'Fira Code', monospace;
     }
-
-    @keyframes dashLine {
-      to { stroke-dashoffset: -20; }
+    /* Pulse and Animation Utilities */
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.3; }
+      100% { transform: scale(0.95); opacity: 0.8; }
     }
-    .flow-line {
-      stroke-dasharray: 6;
-      animation: dashLine 1s linear infinite;
+    .animate-ping-slow {
+      animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
-
-    .cmd-cursor {
-      display: inline-block;
-      width: 8px;
-      height: 15px;
-      background-color: #4ade80;
-      animation: blink 1s step-end infinite;
-      vertical-align: middle;
-      margin-left: 2px;
-    }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
   </style>
 </head>
-<body class="bg-netdark text-slate-200 font-sans min-h-screen flex flex-col selection:bg-sky-500 selection:text-white">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
-  <header class="border-b border-netborder bg-netcard/90 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="p-2 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white shadow-lg shadow-sky-900/30">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-          </svg>
+  <!-- ================= HEADER & LAB NAVIGATION ================= -->
+  <header class="bg-slate-950/80 backdrop-blur border-b border-slate-800 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between py-3 gap-3">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <i class="fa-solid fa-network-wired text-white text-lg"></i>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold text-white tracking-wide flex items-center gap-2">
+              Interactive Computer Network Virtual Lab
+              <span class="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-normal">v2.0 Manual Compliant</span>
+            </h1>
+            <p class="text-xs text-slate-400">ระบบจำลองปฏิบัติการเครือข่ายคอมพิวเตอร์ตามคู่มือการทดลอง 4 ปฏิบัติการ</p>
+          </div>
         </div>
-        <div>
-          <h1 class="text-lg font-bold text-white font-tech tracking-wide flex items-center gap-2">
-            NetworkLab <span class="text-xs font-mono font-medium px-2 py-0.5 rounded bg-sky-950 text-sky-400 border border-sky-800">v2.5</span>
-          </h1>
-          <p class="text-xs text-slate-400">สื่อการสอนปฏิสัมพันธ์จำลองระบบเครือข่ายคอมพิวเตอร์ (Virtual Lab)</p>
-        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex space-x-1 sm:space-x-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none" id="labTabs">
+          <button onclick="switchTab('lab1')" id="tab-lab1" class="lab-tab-btn px-3 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap bg-indigo-600 text-white shadow-md shadow-indigo-600/30">
+            <i class="fa-solid fa-terminal text-xs"></i> Lab 1: CMD Diagnostic
+          </button>
+          <button onclick="switchTab('lab2')" id="tab-lab2" class="lab-tab-btn px-3 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+            <i class="fa-solid fa-diagram-project text-xs"></i> Lab 2: Intra-LAN & ARP
+          </button>
+          <button onclick="switchTab('lab3')" id="tab-lab3" class="lab-tab-btn px-3 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+            <i class="fa-solid fa-route text-xs"></i> Lab 3: Router & Gateway
+          </button>
+          <button onclick="switchTab('lab4')" id="tab-lab4" class="lab-tab-btn px-3 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center gap-1.5 whitespace-nowrap bg-slate-800/80 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+            <i class="fa-solid fa-server text-xs"></i> Lab 4: Core Services
+          </button>
+        </nav>
       </div>
-
-      <!-- Navigation Tabs -->
-      <nav class="flex flex-wrap gap-1 p-1 bg-black/40 rounded-xl border border-netborder text-xs sm:text-sm font-medium">
-        <button onclick="switchLab(1)" id="tab-btn-1" class="tab-btn px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sky-400 bg-netcard shadow border border-sky-500/30">
-          <span class="w-2 h-2 rounded-full bg-sky-400"></span> Lab 1: CMD Diagnostic
-        </button>
-        <button onclick="switchLab(2)" id="tab-btn-2" class="tab-btn px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-white">
-          <span class="w-2 h-2 rounded-full bg-slate-600"></span> Lab 2: Intra-LAN & ARP
-        </button>
-        <button onclick="switchLab(3)" id="tab-btn-3" class="tab-btn px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-white">
-          <span class="w-2 h-2 rounded-full bg-slate-600"></span> Lab 3: Router & Gateway
-        </button>
-        <button onclick="switchLab(4)" id="tab-btn-4" class="tab-btn px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-white">
-          <span class="w-2 h-2 rounded-full bg-slate-600"></span> Lab 4: DHCP & DNS
-        </button>
-      </nav>
     </div>
   </header>
 
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-5">
-    
-    <!-- Left / Center: Interactive Workspace (8 cols) -->
-    <div class="lg:col-span-8 flex flex-col gap-4">
-      
-      <!-- ================================= LAB 1: CMD DIAGNOSTIC ================================= -->
-      <section id="lab-section-1" class="lab-panel flex flex-col gap-4">
-        <!-- Controls Bar -->
-        <div class="bg-netcard p-4 rounded-2xl border border-netborder flex flex-wrap items-center justify-between gap-3 shadow-md">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">สถานะเครือข่ายทดลอง:</span>
-            <div class="inline-flex rounded-lg bg-black/40 p-1 border border-netborder">
-              <button onclick="setNetState('normal')" id="btn-state-normal" class="state-btn text-xs px-3 py-1 rounded-md font-medium transition bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                🟢 ปกติ (Online)
-              </button>
-              <button onclick="setNetState('cable_cut')" id="btn-state-cable" class="state-btn text-xs px-3 py-1 rounded-md font-medium transition text-slate-400 hover:text-white">
-                🔴 สาย LAN ขาด
-              </button>
-              <button onclick="setNetState('dns_down')" id="btn-state-dns" class="state-btn text-xs px-3 py-1 rounded-md font-medium transition text-slate-400 hover:text-white">
-                🟠 DNS Server ล่ม
-              </button>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="executeCmd('cls')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 transition">ล้างหน้าจอ (CLS)</button>
-          </div>
-        </div>
+  <!-- ================= MAIN LAYOUT ================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- Quick Shortcut Commands -->
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-mono">
-          <span class="text-slate-500 font-sans whitespace-nowrap">คลิกคำสั่งด่วน:</span>
-          <button onclick="runSampleCmd('ipconfig')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-sky-900/40 text-sky-300 border border-slate-700 hover:border-sky-500 transition">ipconfig</button>
-          <button onclick="runSampleCmd('ipconfig /all')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-sky-900/40 text-sky-300 border border-slate-700 hover:border-sky-500 transition">ipconfig /all</button>
-          <button onclick="runSampleCmd('ping 127.0.0.1')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-emerald-900/40 text-emerald-300 border border-slate-700 hover:border-emerald-500 transition">ping 127.0.0.1</button>
-          <button onclick="runSampleCmd('ping 8.8.8.8')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-emerald-900/40 text-emerald-300 border border-slate-700 hover:border-emerald-500 transition">ping 8.8.8.8</button>
-          <button onclick="runSampleCmd('ping www.google.com')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-amber-900/40 text-amber-300 border border-slate-700 hover:border-amber-500 transition">ping www.google.com</button>
-        </div>
+    <!-- Primary Interactive Workspace (Left Col 8) -->
+    <section class="lg:col-span-8 flex flex-col space-y-4 min-h-[640px]">
 
-        <div class="bg-[#0c0c0c] border border-slate-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col font-mono text-sm h-[480px]">
-          <!-- Window Title Bar -->
-          <div class="bg-[#1f1f1f] px-4 py-2 border-b border-slate-800 flex items-center justify-between text-slate-300 text-xs select-none">
-            <div class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM4 18V6h16v12H4zm2-10h2v2H6V8zm0 4h6v2H6v-2z"/></svg>
-              <span>Command Prompt - Windows Terminal Virtual Emulator</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <span class="w-3 h-0.5 bg-slate-400 inline-block"></span>
-              <span class="w-3 h-3 border border-slate-400 inline-block"></span>
-              <span class="text-slate-400 text-sm">✕</span>
-            </div>
-          </div>
-
-          <!-- Console Screen -->
-          <div id="cmd-output" class="p-4 flex-1 overflow-y-auto text-slate-200 leading-relaxed font-mono text-xs sm:text-sm space-y-2">
-            <p class="text-slate-400">Microsoft Windows [Version 10.0.22631.3296]<br>(c) Microsoft Corporation. สงวนลิขสิทธิ์ทั้งหมด.<br>พิมพ์ <span class="text-sky-400">help</span> เพื่อดูคำสั่งที่รองรับ หรือคลิกปุ่มลัดด้านบน</p>
-          </div>
-
-          <!-- Prompt Input Row -->
-          <div class="p-3 bg-black/60 border-t border-slate-800 flex items-center gap-2 text-emerald-400">
-            <span class="text-slate-400 whitespace-nowrap text-xs sm:text-sm">C:\Users\Student&gt;</span>
-            <input id="cmd-input" type="text" autocomplete="off" spellcheck="false" class="flex-1 bg-transparent border-none outline-none text-emerald-400 font-mono text-xs sm:text-sm focus:ring-0 p-0" placeholder="พิมพ์คำสั่ง เช่น ping 8.8.8.8 แล้วกด Enter" />
-          </div>
-        </div>
-      </section>
-
-      <!-- ================================= LAB 2: INTRA-LAN & ARP ================================= -->
-      <section id="lab-section-2" class="lab-panel hidden flex flex-col gap-4">
-        <!-- Controls & Simulator Canvas -->
-        <div class="bg-netcard p-4 rounded-2xl border border-netborder space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-netborder/60 pb-3">
+      <!-- ================= LAB 1: CMD DIAGNOSTIC ================= -->
+      <div id="lab1-panel" class="lab-content flex-1 flex flex-col space-y-4">
+        <!-- Scenario Controls -->
+        <div class="bg-slate-800/90 border border-slate-700/80 rounded-xl p-4 shadow-lg backdrop-blur">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h3 class="font-bold text-white text-base">สวิตช์เครือข่ายภายใน LAN และโปรโตคอล ARP (Address Resolution Protocol)</h3>
-              <p class="text-xs text-slate-400">สังเกตการส่งแพ็กเก็ต ARP Broadcast เมื่อยังไม่มีข้อมูลในตาราง และการส่งข้อมูลแบบ Unicast ในเลเยอร์ 2</p>
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Network Scenario Controls</span>
+              <span class="text-sm font-medium text-slate-200">จำลองสถานะเครือข่ายสำหรับทดสอบคำสั่ง ping:</span>
             </div>
-            <div class="flex items-center gap-2">
-              <button onclick="triggerArpSim()" id="btn-arp-send" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-lg shadow-sky-600/30 transition flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                ส่ง Ping (PC-A &rarr; PC-B)
+            <div class="inline-flex p-1 bg-slate-900/90 rounded-lg border border-slate-700/80 w-full sm:w-auto" id="lab1-modes">
+              <button onclick="setLab1Mode('normal')" id="l1-btn-normal" class="flex-1 sm:flex-initial px-3 py-1.5 rounded-md text-xs font-medium transition bg-emerald-600 text-white shadow">
+                <i class="fa-solid fa-circle-check mr-1"></i> โหมดปกติ (Normal)
               </button>
-              <button onclick="resetArpLab()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-2 rounded-xl border border-slate-700 transition">
-                ล้างข้อมูลตาราง MAC/ARP
+              <button onclick="setLab1Mode('cable_cut')" id="l1-btn-cable" class="flex-1 sm:flex-initial px-3 py-1.5 rounded-md text-xs font-medium transition text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-link-slash mr-1"></i> สาย LAN หลุด
               </button>
-            </div>
-          </div>
-
-          <div class="relative bg-slate-950/80 rounded-xl p-4 border border-netborder/70 overflow-hidden min-h-[340px]">
-            <!-- Status Pill Banner -->
-            <div id="arp-status-pill" class="absolute top-3 left-4 bg-slate-900/90 text-sky-300 border border-sky-500/30 text-xs px-3 py-1.5 rounded-full font-mono flex items-center gap-2 z-10 backdrop-blur">
-              <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
-              <span id="arp-status-text">สถานะ: พร้อมจำลองส่งข้อมูลจาก PC-A ไป PC-B</span>
-            </div>
-
-            <!-- SVG Diagram with interactive nodes -->
-            <svg id="svg-topology" class="w-full h-80" viewBox="0 0 700 320">
-              <defs>
-                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="4" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
-
-              <!-- Connection Cables -->
-              <line id="cable-pcA" x1="120" y1="90" x2="350" y2="170" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
-              <line id="cable-pcB" x1="580" y1="90" x2="350" y2="170" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
-              <line id="cable-pcC" x1="350" y1="270" x2="350" y2="170" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
-
-              <!-- Animated Packet Dots -->
-              <circle id="packet-1" cx="-50" cy="-50" r="8" fill="#38bdf8" class="packet-glow" opacity="0"/>
-              <circle id="packet-2" cx="-50" cy="-50" r="8" fill="#fb7185" class="packet-glow" opacity="0"/>
-
-              <!-- Switch Node (Center) -->
-              <g transform="translate(300, 135)">
-                <rect width="100" height="70" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
-                <text x="50" y="28" fill="#38bdf8" font-size="12" font-family="Chakra Petch" font-weight="bold" text-anchor="middle">L2 SWITCH</text>
-                <text x="50" y="46" fill="#94a3b8" font-size="9" font-family="monospace" text-anchor="middle">MAC Table (Bridge)</text>
-                <!-- Ports Indicator -->
-                <circle cx="25" cy="58" r="4" fill="#4ade80" />
-                <circle cx="50" cy="58" r="4" fill="#4ade80" />
-                <circle cx="75" cy="58" r="4" fill="#4ade80" />
-                <text x="25" y="52" fill="#64748b" font-size="7" text-anchor="middle">Fa0/1</text>
-                <text x="50" y="52" fill="#64748b" font-size="7" text-anchor="middle">Fa0/3</text>
-                <text x="75" y="52" fill="#64748b" font-size="7" text-anchor="middle">Fa0/2</text>
-              </g>
-
-              <!-- Node: PC-A -->
-              <g transform="translate(60, 40)">
-                <rect width="120" height="75" rx="8" fill="#0f172a" stroke="#4ade80" stroke-width="1.5"/>
-                <rect x="35" y="10" width="50" height="30" rx="4" fill="#1e293b" stroke="#4ade80" stroke-width="1"/>
-                <text x="60" y="28" fill="#4ade80" font-size="10" font-weight="bold" text-anchor="middle">PC-A</text>
-                <text x="60" y="52" fill="#e2e8f0" font-size="9" font-family="monospace" text-anchor="middle">192.168.1.10</text>
-                <text x="60" y="66" fill="#94a3b8" font-size="8" font-family="monospace" text-anchor="middle">00:1A:2B:AA:00:01</text>
-                <circle cx="115" cy="40" r="4" fill="#4ade80"/>
-              </g>
-
-              <!-- Node: PC-B -->
-              <g transform="translate(520, 40)">
-                <rect width="120" height="75" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
-                <rect x="35" y="10" width="50" height="30" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
-                <text x="60" y="28" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle">PC-B</text>
-                <text x="60" y="52" fill="#e2e8f0" font-size="9" font-family="monospace" text-anchor="middle">192.168.1.20</text>
-                <text x="60" y="66" fill="#94a3b8" font-size="8" font-family="monospace" text-anchor="middle">00:1A:2B:BB:00:02</text>
-                <circle cx="5" cy="40" r="4" fill="#38bdf8"/>
-              </g>
-
-              <!-- Node: PC-C -->
-              <g transform="translate(290, 230)">
-                <rect width="120" height="75" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="1.5"/>
-                <rect x="35" y="10" width="50" height="30" rx="4" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
-                <text x="60" y="28" fill="#a855f7" font-size="10" font-weight="bold" text-anchor="middle">PC-C (Observer)</text>
-                <text x="60" y="52" fill="#e2e8f0" font-size="9" font-family="monospace" text-anchor="middle">192.168.1.30</text>
-                <text x="60" y="66" fill="#94a3b8" font-size="8" font-family="monospace" text-anchor="middle">00:1A:2B:CC:00:03</text>
-                <circle cx="60" cy="5" r="4" fill="#a855f7"/>
-              </g>
-            </svg>
-          </div>
-
-          <!-- Dual Tables: MAC Table & ARP Cache Table -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Switch MAC Address Table -->
-            <div class="bg-black/50 border border-netborder rounded-xl p-3">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-bold text-sky-400 flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-sky-400"></span> Switch MAC Address Table (CAM)
-                </span>
-                <span class="text-[10px] text-slate-500 font-mono">Dynamic Learning</span>
-              </div>
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs font-mono">
-                  <thead>
-                    <tr class="text-slate-400 border-b border-slate-800">
-                      <th class="py-1 px-2">VLAN</th>
-                      <th class="py-1 px-2">MAC Address</th>
-                      <th class="py-1 px-2">Type</th>
-                      <th class="py-1 px-2">Port</th>
-                    </tr>
-                  </thead>
-                  <tbody id="switch-mac-tbody" class="divide-y divide-slate-800/60 text-slate-300">
-                    <tr id="row-empty-mac"><td colspan="4" class="py-3 text-center text-slate-500 italic">ยังไม่มีข้อมูลในตาราง (รอรับเฟรม)</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- PC-A ARP Cache Table -->
-            <div class="bg-black/50 border border-netborder rounded-xl p-3">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span> ตาราง ARP Cache (บนเครื่อง PC-A)
-                </span>
-                <span class="text-[10px] text-slate-500 font-mono">arp -a</span>
-              </div>
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs font-mono">
-                  <thead>
-                    <tr class="text-slate-400 border-b border-slate-800">
-                      <th class="py-1 px-2">Internet Address (IP)</th>
-                      <th class="py-1 px-2">Physical Address (MAC)</th>
-                      <th class="py-1 px-2">Type</th>
-                    </tr>
-                  </thead>
-                  <tbody id="pc-arp-tbody" class="divide-y divide-slate-800/60 text-slate-300">
-                    <tr id="row-empty-arp"><td colspan="3" class="py-3 text-center text-slate-500 italic">ว่างเปล่า (Empty Cache)</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================================= LAB 3: ROUTER & GATEWAY ================================= -->
-      <section id="lab-section-3" class="lab-panel hidden flex flex-col gap-4">
-        <div class="bg-netcard p-4 rounded-2xl border border-netborder space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-netborder/60 pb-3">
-            <div>
-              <h3 class="font-bold text-white text-base">เราเตอร์และการส่งต่อข้ามเครือข่าย (Default Gateway & Routing)</h3>
-              <p class="text-xs text-slate-400">การส่งข้อมูลข้าม Subnet ต้องมี Default Gateway สำหรับส่งเฟรมต่อให้เราเตอร์</p>
-            </div>
-            <button onclick="testGatewayPing()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-lg shadow-indigo-600/30 transition flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              ทดสอบส่ง Ping ข้าม Subnet
-            </button>
-          </div>
-
-          <!-- Network Architecture Visualizer -->
-          <div class="relative bg-slate-950/80 rounded-xl p-4 border border-netborder/70 overflow-hidden">
-            <!-- Diagram SVG -->
-            <svg id="svg-router-topo" class="w-full h-64" viewBox="0 0 760 250">
-              <!-- Subnet Zones Background -->
-              <rect x="20" y="20" width="310" height="210" rx="12" fill="#0284c7" fill-opacity="0.05" stroke="#0284c7" stroke-dasharray="4" stroke-width="1"/>
-              <text x="35" y="45" fill="#38bdf8" font-size="11" font-weight="bold">Subnet 1: 192.168.1.0/24</text>
-
-              <rect x="430" y="20" width="310" height="210" rx="12" fill="#8b5cf6" fill-opacity="0.05" stroke="#8b5cf6" stroke-dasharray="4" stroke-width="1"/>
-              <text x="445" y="45" fill="#a78bfa" font-size="11" font-weight="bold">Subnet 2: 192.168.2.0/24</text>
-
-              <!-- Connection Lines -->
-              <line id="line-pca-rtr" x1="120" y1="130" x2="380" y2="130" stroke="#475569" stroke-width="3"/>
-              <line id="line-rtr-pcb" x1="380" y1="130" x2="640" y2="130" stroke="#475569" stroke-width="3"/>
-
-              <!-- Packet Dot -->
-              <circle id="router-packet" cx="-40" cy="-40" r="8" fill="#f59e0b" class="packet-glow" opacity="0"/>
-
-              <!-- PC-1 (Source) -->
-              <g transform="translate(60, 85)">
-                <rect width="120" height="90" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
-                <text x="60" y="25" fill="#38bdf8" font-weight="bold" font-size="12" text-anchor="middle">PC-Source</text>
-                <text x="60" y="45" fill="#e2e8f0" font-family="monospace" font-size="9" text-anchor="middle">IP: 192.168.1.10</text>
-                <text x="60" y="60" fill="#94a3b8" font-family="monospace" font-size="8" text-anchor="middle">Mask: 255.255.255.0</text>
-                <text id="svg-gw-label" x="60" y="75" fill="#fbbf24" font-family="monospace" font-size="8" text-anchor="middle">GW: [ไม่ระบุ]</text>
-              </g>
-
-              <!-- Center Router -->
-              <g transform="translate(340, 90)">
-                <circle cx="40" cy="40" r="35" fill="#1e1e2e" stroke="#f59e0b" stroke-width="2"/>
-                <path d="M25 40h30M40 25v30M28 28l24 24M52 28l-24 24" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
-                <text x="40" y="90" fill="#f59e0b" font-weight="bold" font-size="11" text-anchor="middle">L3 Router</text>
-                <!-- Interface labels -->
-                <text x="-5" y="35" fill="#38bdf8" font-size="8" font-mono font-weight="bold">g0/0 (192.168.1.1)</text>
-                <text x="45" y="35" fill="#a78bfa" font-size="8" font-mono font-weight="bold">g0/1 (192.168.2.1)</text>
-              </g>
-
-              <!-- PC-2 (Destination) -->
-              <g transform="translate(580, 85)">
-                <rect width="120" height="90" rx="8" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5"/>
-                <text x="60" y="25" fill="#a78bfa" font-weight="bold" font-size="12" text-anchor="middle">PC-Target</text>
-                <text x="60" y="45" fill="#e2e8f0" font-family="monospace" font-size="9" text-anchor="middle">IP: 192.168.2.10</text>
-                <text x="60" y="60" fill="#94a3b8" font-family="monospace" font-size="8" text-anchor="middle">Mask: 255.255.255.0</text>
-                <text x="60" y="75" fill="#34d399" font-family="monospace" font-size="8" text-anchor="middle">GW: 192.168.2.1</text>
-              </g>
-            </svg>
-          </div>
-
-          <!-- Configuration Panel for Gateway -->
-          <div class="bg-black/40 border border-netborder rounded-xl p-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-            <div class="md:col-span-2 space-y-2">
-              <label class="block text-xs font-semibold text-slate-300">
-                กำหนดค่า Default Gateway บนเครื่องต้นทาง (PC-Source):
-              </label>
-              <div class="flex items-center gap-2">
-                <input id="input-gateway" type="text" placeholder="ระบุ IP เช่น 192.168.1.1" value="" 
-                       class="bg-slate-900 border border-slate-700 focus:border-indigo-500 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-mono text-white outline-none w-full max-w-xs transition">
-                <button onclick="applyGatewaySetting()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3 py-2 rounded-lg border border-slate-600 transition font-medium">
-                  บันทึกการตั้งค่า
-                </button>
-              </div>
-              <p class="text-[11px] text-slate-400">
-                💡 <strong class="text-indigo-300">คำใบ้:</strong> Gateway คือ IP ขา Interface ของเราเตอร์ที่อยู่ฝั่งเดียวกับ PC ต้นทาง (192.168.1.x)
-              </p>
-            </div>
-            <div id="gw-result-box" class="bg-slate-900 p-3 rounded-lg border border-slate-800 text-xs">
-              <div class="font-bold text-slate-300 mb-1">ผลการทดสอบการส่ง:</div>
-              <div id="gw-result-text" class="text-slate-500">กดปุ่ม "ทดสอบส่ง Ping ข้าม Subnet" ด้านบน</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================================= LAB 4: DHCP & DNS SERVICES ================================= -->
-      <section id="lab-section-4" class="lab-panel hidden flex flex-col gap-4">
-        
-        <!-- Tab Sub-sections: 4A DHCP DORA & 4B DNS Web -->
-        <div class="grid grid-cols-1 gap-4">
-          
-          <!-- PART 4.1: DHCP DORA Mechanism -->
-          <div class="bg-netcard p-4 rounded-2xl border border-netborder space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-netborder/60 pb-3">
-              <div>
-                <span class="text-xs font-bold text-amber-400 uppercase tracking-wide">ขั้นตอนที่ 1</span>
-                <h3 class="font-bold text-white text-base">กระบวนการแจก IP อัตโนมัติ: DHCP DORA Process</h3>
-                <p class="text-xs text-slate-400">Discover &rarr; Offer &rarr; Request &rarr; Acknowledge (DORA)</p>
-              </div>
-              <button onclick="startDhcpDora()" id="btn-dhcp-start" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-lg shadow-amber-600/30 transition flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                เริ่มจำลองขั้นตอน DORA
+              <button onclick="setLab1Mode('dns_failure')" id="l1-btn-dns" class="flex-1 sm:flex-initial px-3 py-1.5 rounded-md text-xs font-medium transition text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i> DNS ขัดข้อง
               </button>
             </div>
-
-            <!-- DORA Step visual track -->
-            <div class="grid grid-cols-4 gap-2 text-center text-xs font-mono">
-              <div id="dora-step-D" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 transition-all">
-                <div class="font-bold">1. DISCOVER</div>
-                <div class="text-[10px] text-slate-500">PC ค้นหา DHCP (Broadcast)</div>
-              </div>
-              <div id="dora-step-O" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 transition-all">
-                <div class="font-bold">2. OFFER</div>
-                <div class="text-[10px] text-slate-500">Server ยื่นข้อเสนอ IP</div>
-              </div>
-              <div id="dora-step-R" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 transition-all">
-                <div class="font-bold">3. REQUEST</div>
-                <div class="text-[10px] text-slate-500">PC ร้องขอใช้ IP นั้น</div>
-              </div>
-              <div id="dora-step-A" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 transition-all">
-                <div class="font-bold">4. ACK</div>
-                <div class="text-[10px] text-slate-500">Server ยืนยันให้ใช้งาน</div>
-              </div>
-            </div>
-
-            <!-- DORA Animation visual stage -->
-            <div class="relative bg-slate-950/80 rounded-xl p-3 border border-netborder/60 flex items-center justify-between text-xs">
-              <div class="flex items-center gap-3 bg-slate-900 p-2.5 rounded-lg border border-slate-800">
-                <div class="p-2 bg-slate-800 rounded-lg text-emerald-400">💻</div>
-                <div>
-                  <div class="font-bold text-white">Client (PC)</div>
-                  <div id="dhcp-client-ip" class="font-mono text-slate-400">IP: 0.0.0.0 (Unconfigured)</div>
-                </div>
-              </div>
-
-              <!-- Animated middle message -->
-              <div class="flex-1 px-4 text-center">
-                <div id="dhcp-fly-packet" class="inline-block px-3 py-1 rounded-full text-xs font-mono font-bold transition-all duration-500 opacity-0 transform translate-y-0">
-                  Packet Flow
-                </div>
-              </div>
-
-              <div class="flex items-center gap-3 bg-slate-900 p-2.5 rounded-lg border border-slate-800">
-                <div class="text-right">
-                  <div class="font-bold text-white">DHCP Server</div>
-                  <div class="font-mono text-amber-400">192.168.1.254</div>
-                </div>
-                <div class="p-2 bg-slate-800 rounded-lg text-amber-400">🗄️</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- PART 4.2: DNS Lookup & Browser Simulation -->
-          <div class="bg-netcard p-4 rounded-2xl border border-netborder space-y-4">
-            <div>
-              <span class="text-xs font-bold text-sky-400 uppercase tracking-wide">ขั้นตอนที่ 2</span>
-              <h3 class="font-bold text-white text-base">ระบบแปลงชื่อโดเมน (DNS) และเว็บเซิร์ฟเวอร์</h3>
-              <p class="text-xs text-slate-400">พิมพ์ URL เพื่อสังเกตการสืบค้น IP ผ่าน DNS Server ก่อนเชื่อมต่อเข้าสู่ Web Server (Port 80/443)</p>
-            </div>
-
-            <!-- Simulated Web Browser Window -->
-            <div class="bg-slate-950 border border-slate-700 rounded-xl overflow-hidden shadow-xl">
-              <!-- Browser Chrome Navigation Bar -->
-              <div class="bg-slate-900 px-3 py-2 border-b border-slate-800 flex items-center gap-2">
-                <div class="flex items-center gap-1.5 mr-2">
-                  <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
-                  <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
-                  <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
-                </div>
-                
-                <!-- URL Address Bar -->
-                <div class="flex-1 flex items-center bg-black/60 rounded-lg px-3 py-1.5 border border-slate-700 focus-within:border-sky-500 text-xs">
-                  <span class="text-slate-500 mr-1 select-none">🔒 https://</span>
-                  <input id="browser-url-input" type="text" value="www.ku.ac.th" placeholder="เช่น www.ku.ac.th หรือ www.google.com" 
-                         class="bg-transparent flex-1 text-slate-200 outline-none font-mono">
-                  <button onclick="browseUrl()" class="ml-2 bg-sky-600 hover:bg-sky-500 text-white px-2.5 py-0.5 rounded text-[11px] font-medium transition">
-                    ค้นหา (Go)
-                  </button>
-                </div>
-              </div>
-
-              <!-- DNS & Request Status bar -->
-              <div id="dns-status-log" class="bg-slate-900/60 px-4 py-1.5 text-[11px] font-mono text-slate-400 border-b border-slate-800/80 flex items-center justify-between">
-                <span>สถานะ: พร้อมเรียกหน้าเว็บ</span>
-                <span id="dns-resolved-ip" class="text-sky-400">DNS Cache: ว่าง</span>
-              </div>
-
-              <!-- Browser Viewport (Webpage canvas) -->
-              <div id="browser-viewport" class="p-6 min-h-[170px] flex flex-col items-center justify-center text-center bg-slate-950 text-slate-400">
-                <svg class="w-10 h-10 text-slate-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
-                <p class="text-xs">พิมพ์ที่อยู่เว็บด้านบนแล้วกดปุ่ม <strong>"ค้นหา (Go)"</strong> เพื่อดูการทำงานของ DNS</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- Right: Theoretical Knowledge & Context Panel (4 cols) -->
-    <div class="lg:col-span-4 flex flex-col gap-4">
-      <div class="bg-netcard border border-netborder rounded-2xl p-5 sticky top-20 shadow-lg space-y-4">
-        <div class="flex items-center gap-2 border-b border-netborder pb-3">
-          <div class="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-400">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-          </div>
-          <h2 id="theory-title" class="font-bold text-white text-base">สรุปทฤษฎี & สถาปัตยกรรม</h2>
-        </div>
-
-        <!-- Dynamic Concept Body -->
-        <div id="theory-content" class="text-xs text-slate-300 leading-relaxed space-y-3">
-          <!-- Populated by JavaScript switchLab() -->
-        </div>
-
-        <!-- OSI Layer Mapping Tag -->
-        <div class="pt-3 border-t border-netborder">
-          <div class="text-[11px] text-slate-400 font-semibold mb-1">ความเชื่อมโยงกับ OSI 7 Layers:</div>
-          <div id="theory-osi-badges" class="flex flex-wrap gap-1.5">
-            <!-- Badges -->
           </div>
         </div>
 
-        <!-- Quick Tips Callout -->
-        <div id="theory-tip" class="p-3 rounded-xl bg-sky-950/40 border border-sky-800/40 text-sky-200 text-[11px] leading-relaxed">
-          <!-- Tip text -->
+        <!-- CMD Window Emulator -->
+        <div class="flex-1 bg-black border border-slate-700 rounded-xl overflow-hidden shadow-2xl flex flex-col font-mono-code">
+          <!-- Terminal Titlebar -->
+          <div class="bg-slate-800 px-4 py-2 border-b border-slate-700 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <i class="fa-solid fa-terminal text-slate-400 text-xs"></i>
+              <span class="text-xs font-medium text-slate-300">Command Prompt - Lab 1 PC Simulator</span>
+            </div>
+            <div class="flex space-x-2">
+              <span class="w-3 h-3 rounded-full bg-slate-600 hover:bg-slate-500 inline-block cursor-pointer"></span>
+              <span class="w-3 h-3 rounded-full bg-slate-600 hover:bg-slate-500 inline-block cursor-pointer"></span>
+              <span class="w-3 h-3 rounded-full bg-red-600/80 hover:bg-red-500 inline-block cursor-pointer" onclick="clearTerminal()"></span>
+            </div>
+          </div>
+
+          <!-- Terminal Output Body -->
+          <div id="cmd-output" class="flex-1 p-4 overflow-y-auto space-y-2 text-xs sm:text-sm text-gray-200 max-h-[460px] min-h-[380px] select-text">
+            <div>Microsoft Windows [Version 10.0.19045.3803]</div>
+            <div>(c) Microsoft Corporation. All rights reserved.</div>
+            <div class="text-slate-400 mt-2 mb-3">พิมพ์คำสั่ง: <span class="text-yellow-300">ipconfig</span>, <span class="text-yellow-300">ipconfig /all</span>, <span class="text-yellow-300">ping 127.0.0.1</span>, <span class="text-yellow-300">ping 192.168.1.1</span>, <span class="text-yellow-300">ping 8.8.8.8</span>, <span class="text-yellow-300">ping www.google.com</span>, <span class="text-yellow-300">cls</span></div>
+          </div>
+
+          <!-- Quick Command Suggestions Bar -->
+          <div class="bg-slate-900/90 px-4 py-1.5 border-t border-slate-800 flex items-center gap-2 overflow-x-auto text-xs scrollbar-none">
+            <span class="text-slate-500 whitespace-nowrap text-[11px]">คลิกเพื่อป้อนคำสั่ง:</span>
+            <button onclick="quickCmd('ipconfig /all')" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 px-2 py-0.5 rounded border border-slate-700">ipconfig /all</button>
+            <button onclick="quickCmd('ping 127.0.0.1')" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 px-2 py-0.5 rounded border border-slate-700">ping 127.0.0.1</button>
+            <button onclick="quickCmd('ping 192.168.1.1')" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 px-2 py-0.5 rounded border border-slate-700">ping 192.168.1.1</button>
+            <button onclick="quickCmd('ping 8.8.8.8')" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 px-2 py-0.5 rounded border border-slate-700">ping 8.8.8.8</button>
+            <button onclick="quickCmd('ping www.google.com')" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 px-2 py-0.5 rounded border border-slate-700">ping www.google.com</button>
+            <button onclick="quickCmd('cls')" class="bg-slate-800 hover:bg-slate-700 text-rose-300 px-2 py-0.5 rounded border border-slate-700">cls</button>
+          </div>
+
+          <!-- Terminal Input Prompt -->
+          <form onsubmit="handleCmdSubmit(event)" class="bg-black border-t border-slate-800 px-4 py-3 flex items-center gap-2">
+            <span class="text-emerald-400 font-bold whitespace-nowrap">C:\Users\Student&gt;</span>
+            <input type="text" id="cmd-input" autocomplete="off" spellcheck="false" class="flex-1 bg-transparent border-0 text-gray-100 focus:outline-none text-xs sm:text-sm font-mono-code" placeholder="พิมพ์คำสั่งแล้วกด Enter..." autofocus />
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded text-xs">Run</button>
+          </form>
         </div>
       </div>
-    </div>
+
+      <!-- ================= LAB 2: INTRA-LAN & ARP ================= -->
+      <div id="lab2-panel" class="lab-content hidden flex-1 flex flex-col space-y-4">
+        <!-- Control Bar -->
+        <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 shadow-lg flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+              <label class="text-xs text-slate-400">Source:</label>
+              <select id="l2-source" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200">
+                <option value="A">PC-A (192.168.1.10)</option>
+              </select>
+            </div>
+            <i class="fa-solid fa-arrow-right text-slate-500 text-xs"></i>
+            <div class="flex items-center gap-2">
+              <label class="text-xs text-slate-400">Destination:</label>
+              <select id="l2-dest" class="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200">
+                <option value="B">PC-B (192.168.1.20)</option>
+                <option value="C">PC-C (ค่าตามกำหนด)</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="l2StartStepByStep()" id="l2-start-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 shadow">
+              <i class="fa-solid fa-play"></i> Start Ping (Step-by-Step)
+            </button>
+            <button onclick="l2NextStep()" id="l2-next-btn" disabled class="bg-slate-700 text-slate-400 cursor-not-allowed px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5">
+              <i class="fa-solid fa-forward-step"></i> Next Step
+            </button>
+            <button onclick="l2Reset()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs transition">
+              <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Network Diagram & Animation Workspace -->
+        <div class="relative bg-slate-950 border border-slate-800 rounded-xl p-4 min-h-[460px] flex flex-col justify-between overflow-hidden">
+          <!-- Step Explanation Banner -->
+          <div id="l2-status-banner" class="bg-indigo-950/60 border border-indigo-500/30 rounded-lg p-2.5 text-xs text-indigo-200 flex items-center gap-2">
+            <i class="fa-solid fa-circle-info text-indigo-400"></i>
+            <span id="l2-status-text">พร้อมเริ่มต้นการทดลอง เลือก Source/Destination แล้วกด "Start Ping (Step-by-Step)"</span>
+          </div>
+
+          <!-- SVG Topology Canvas -->
+          <div class="relative w-full h-[320px] my-2">
+            <svg id="l2-svg-canvas" class="w-full h-full" viewBox="0 0 600 300">
+              <!-- Connecting Wires -->
+              <!-- Wire Switch to PC-A -->
+              <line x1="300" y1="70" x2="100" y2="220" stroke="#334155" stroke-width="3" stroke-dasharray="4" id="wire-a" />
+              <!-- Wire Switch to PC-B -->
+              <line x1="300" y1="70" x2="300" y2="220" stroke="#334155" stroke-width="3" stroke-dasharray="4" id="wire-b" />
+              <!-- Wire Switch to PC-C -->
+              <line x1="300" y1="70" x2="500" y2="220" stroke="#334155" stroke-width="3" stroke-dasharray="4" id="wire-c" />
+
+              <!-- Animated Packet Circle 1 -->
+              <g id="l2-packet-1" style="display: none; transition: transform 0.8s ease-in-out;">
+                <circle cx="0" cy="0" r="14" fill="#f97316" id="l2-packet-color-1" />
+                <text x="0" y="4" font-size="9" text-anchor="middle" fill="#ffffff" font-weight="bold" id="l2-packet-text-1">ARP</text>
+              </g>
+              <!-- Animated Packet Circle 2 (For Broadcast splitting) -->
+              <g id="l2-packet-2" style="display: none; transition: transform 0.8s ease-in-out;">
+                <circle cx="0" cy="0" r="14" fill="#f97316" id="l2-packet-color-2" />
+                <text x="0" y="4" font-size="9" text-anchor="middle" fill="#ffffff" font-weight="bold" id="l2-packet-text-2">ARP</text>
+              </g>
+
+              <!-- Switch0 Node (Center Top) -->
+              <g transform="translate(250, 20)">
+                <rect width="100" height="50" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+                <text x="50" y="24" font-size="12" font-weight="bold" fill="#38bdf8" text-anchor="middle">Switch0</text>
+                <text x="50" y="40" font-size="9" fill="#94a3b8" text-anchor="middle">Layer 2 Switch</text>
+              </g>
+
+              <!-- Node Port Labels -->
+              <text x="265" y="85" font-size="9" fill="#94a3b8">Port 1</text>
+              <text x="305" y="85" font-size="9" fill="#94a3b8">Port 2</text>
+              <text x="335" y="85" font-size="9" fill="#94a3b8">Port 3</text>
+            </svg>
+
+            <!-- HTML Overlaid Nodes for Form Inputs -->
+            <!-- PC-A -->
+            <div class="absolute left-6 bottom-2 w-44 bg-slate-900/90 border border-slate-700 rounded-lg p-2.5 shadow-md text-[11px]">
+              <div class="flex items-center justify-between font-bold text-emerald-400 mb-1">
+                <span><i class="fa-solid fa-desktop mr-1"></i> PC-A (Port 1)</span>
+              </div>
+              <div class="space-y-1 text-slate-300 font-mono-code">
+                <div>MAC: <span class="text-slate-400">00-1A-2B-3C-4D-01</span></div>
+                <div class="flex items-center gap-1">
+                  <span>IP:</span>
+                  <input type="text" id="l2-ip-a" value="192.168.1.10" class="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-700 text-white w-full text-[11px]" />
+                </div>
+                <div class="flex items-center gap-1">
+                  <span>Mask:</span>
+                  <input type="text" id="l2-mask-a" value="255.255.255.0" class="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-700 text-slate-300 w-full text-[11px]" />
+                </div>
+              </div>
+            </div>
+
+            <!-- PC-B -->
+            <div class="absolute left-[38%] bottom-2 w-44 bg-slate-900/90 border border-slate-700 rounded-lg p-2.5 shadow-md text-[11px]">
+              <div class="flex items-center justify-between font-bold text-sky-400 mb-1">
+                <span><i class="fa-solid fa-desktop mr-1"></i> PC-B (Port 2)</span>
+              </div>
+              <div class="space-y-1 text-slate-300 font-mono-code">
+                <div>MAC: <span class="text-slate-400">00-1A-2B-3C-4D-02</span></div>
+                <div class="flex items-center gap-1">
+                  <span>IP:</span>
+                  <input type="text" id="l2-ip-b" value="192.168.1.20" class="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-700 text-white w-full text-[11px]" />
+                </div>
+                <div class="flex items-center gap-1">
+                  <span>Mask:</span>
+                  <input type="text" id="l2-mask-b" value="255.255.255.0" class="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-700 text-slate-300 w-full text-[11px]" />
+                </div>
+              </div>
+            </div>
+
+            <!-- PC-C -->
+            <div class="absolute right-6 bottom-2 w-44 bg-slate-900/90 border border-slate-700 rounded-lg p-2.5 shadow-md text-[11px]">
+              <div class="flex items-center justify-between font-bold text-amber-400 mb-1">
+                <span><i class="fa-solid fa-desktop mr-1"></i> PC-C (Port 3)</span>
+                <button onclick="l2SetSubnetMismatch()" class="text-[9px] bg-amber-500/20 text-amber-300 px-1 rounded hover:bg-amber-500/30">ทดสอบต่าง Subnet</button>
+              </div>
+              <div class="space-y-1 text-slate-300 font-mono-code">
+                <div>MAC: <span class="text-slate-400">00-1A-2B-3C-4D-03</span></div>
+                <div class="flex items-center gap-1">
+                  <span>IP:</span>
+                  <input type="text" id="l2-ip-c" value="192.168.1.30" class="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-700 text-white w-full text-[11px]" />
+                </div>
+                <div class="flex items-center gap-1">
+                  <span>Mask:</span>
+                  <input type="text" id="l2-mask-c" value="255.255.255.0" class="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-700 text-slate-300 w-full text-[11px]" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MAC Address Table Component -->
+          <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-3 mt-2">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-table-list text-cyan-400"></i> Switch MAC Address Table
+              </span>
+              <span class="text-[10px] text-slate-500">Auto-learned from frame source MAC</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs font-mono-code">
+                <thead class="bg-slate-950 text-slate-400 text-[11px] border-b border-slate-800">
+                  <tr>
+                    <th class="py-1.5 px-3">Port ของ Switch</th>
+                    <th class="py-1.5 px-3">MAC Address ที่เรียนรู้</th>
+                    <th class="py-1.5 px-3">เชื่อมต่อกับเครื่อง</th>
+                    <th class="py-1.5 px-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800" id="l2-mac-table-body">
+                  <tr id="l2-row-port1">
+                    <td class="py-1 px-3 text-cyan-400">Port 1</td>
+                    <td class="py-1 px-3 text-slate-400" id="mac-port-1">--:--:--:--:--:--</td>
+                    <td class="py-1 px-3 text-slate-300">PC-A</td>
+                    <td class="py-1 px-3"><span class="text-[10px] bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded" id="mac-tag-1">Empty</span></td>
+                  </tr>
+                  <tr id="l2-row-port2">
+                    <td class="py-1 px-3 text-cyan-400">Port 2</td>
+                    <td class="py-1 px-3 text-slate-400" id="mac-port-2">--:--:--:--:--:--</td>
+                    <td class="py-1 px-3 text-slate-300">PC-B</td>
+                    <td class="py-1 px-3"><span class="text-[10px] bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded" id="mac-tag-2">Empty</span></td>
+                  </tr>
+                  <tr id="l2-row-port3">
+                    <td class="py-1 px-3 text-cyan-400">Port 3</td>
+                    <td class="py-1 px-3 text-slate-400" id="mac-port-3">--:--:--:--:--:--</td>
+                    <td class="py-1 px-3 text-slate-300">PC-C</td>
+                    <td class="py-1 px-3"><span class="text-[10px] bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded" id="mac-tag-3">Empty</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= LAB 3: ROUTER & GATEWAY ================= -->
+      <div id="lab3-panel" class="lab-content hidden flex-1 flex flex-col space-y-4">
+        <!-- Control Header -->
+        <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 shadow-lg flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center space-x-3">
+            <span class="text-xs font-semibold text-slate-300">Router Interface Status:</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="l3-router-toggle" checked onchange="l3ToggleRouter()" class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+            </label>
+            <span id="l3-router-state-text" class="text-xs font-medium text-emerald-400">ON (Enabled)</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="l3SimulatePing()" id="l3-ping-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 shadow">
+              <i class="fa-solid fa-paper-plane"></i> Simulate Ping (PC-A1 ➡️ PC-B1)
+            </button>
+            <button onclick="l3ResetFields()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs transition">
+              <i class="fa-solid fa-rotate-left"></i> Reset Defaults
+            </button>
+          </div>
+        </div>
+
+        <!-- Two-Subnet Router Diagram -->
+        <div class="relative bg-slate-950 border border-slate-800 rounded-xl p-4 min-h-[460px] flex flex-col justify-between overflow-hidden">
+          <!-- Status Announcement Box -->
+          <div id="l3-status-box" class="bg-slate-900 border border-slate-700/80 rounded-lg p-2.5 text-xs text-slate-300 flex items-center gap-2">
+            <i class="fa-solid fa-circle-info text-cyan-400"></i>
+            <span id="l3-status-desc">สังเกตค่า Default Gateway ของ PC-A1 หากถูกต้อง ซองข้อมูลจะวิ่งผ่าน Router ข้าม Subnet ได้</span>
+          </div>
+
+          <!-- Router SVG Canvas -->
+          <div class="relative w-full h-[320px] my-2">
+            <svg id="l3-svg-canvas" class="w-full h-full" viewBox="0 0 700 280">
+              <!-- Background Partition Zones -->
+              <rect x="20" y="10" width="310" height="260" rx="10" fill="#0f172a" stroke="#1e293b" stroke-dasharray="4" />
+              <text x="35" y="32" font-size="11" font-weight="bold" fill="#38bdf8">LAN 1 (192.168.1.0/24)</text>
+
+              <rect x="370" y="10" width="310" height="260" rx="10" fill="#0f172a" stroke="#1e293b" stroke-dasharray="4" />
+              <text x="385" y="32" font-size="11" font-weight="bold" fill="#a855f7">LAN 2 (192.168.2.0/24)</text>
+
+              <!-- Topology Lines -->
+              <!-- PC-A1 to Switch-A -->
+              <line x1="80" y1="180" x2="160" y2="100" stroke="#475569" stroke-width="2.5" />
+              <!-- Switch-A to Router g0/0 -->
+              <line x1="160" y1="100" x2="310" y2="100" stroke="#475569" stroke-width="2.5" />
+              <!-- Router g0/1 to Switch-B -->
+              <line x1="390" y1="100" x2="540" y2="100" stroke="#475569" stroke-width="2.5" />
+              <!-- Switch-B to PC-B1 -->
+              <line x1="540" y1="100" x2="620" y2="180" stroke="#475569" stroke-width="2.5" />
+
+              <!-- Animated Ping Packet -->
+              <g id="l3-packet" style="display: none; transition: transform 0.6s ease-in-out;">
+                <circle cx="0" cy="0" r="13" fill="#6366f1" id="l3-packet-dot" />
+                <text x="0" y="4" font-size="9" text-anchor="middle" fill="#ffffff" font-weight="bold">ICMP</text>
+              </g>
+
+              <!-- Switch-A Node -->
+              <g transform="translate(130, 80)">
+                <rect width="60" height="36" rx="6" fill="#1e293b" stroke="#64748b" stroke-width="1.5" />
+                <text x="30" y="22" font-size="10" fill="#e2e8f0" font-weight="bold" text-anchor="middle">SW-A</text>
+              </g>
+
+              <!-- Central Router Node -->
+              <g transform="translate(310, 70)">
+                <circle cx="40" cy="30" r="28" fill="#1e293b" stroke="#10b981" stroke-width="2" id="l3-router-circle" />
+                <path d="M25,30 L55,30 M40,15 L40,45 M30,20 L50,40 M30,40 L50,20" stroke="#10b981" stroke-width="2" />
+                <text x="40" y="72" font-size="11" font-weight="bold" fill="#10b981" text-anchor="middle">Router0</text>
+                <!-- Interface labels -->
+                <text x="-5" y="24" font-size="9" fill="#94a3b8" text-anchor="end">g0/0: 192.168.1.1</text>
+                <text x="85" y="24" font-size="9" fill="#94a3b8" text-anchor="start">g0/1: 192.168.2.1</text>
+              </g>
+
+              <!-- Switch-B Node -->
+              <g transform="translate(510, 80)">
+                <rect width="60" height="36" rx="6" fill="#1e293b" stroke="#64748b" stroke-width="1.5" />
+                <text x="30" y="22" font-size="10" fill="#e2e8f0" font-weight="bold" text-anchor="middle">SW-B</text>
+              </g>
+            </svg>
+
+            <!-- PC-A1 Config Card (Left) -->
+            <div class="absolute left-6 bottom-3 w-56 bg-slate-900 border border-slate-700 rounded-lg p-3 text-[11px]">
+              <div class="font-bold text-sky-400 mb-1.5 flex items-center justify-between">
+                <span><i class="fa-solid fa-desktop mr-1"></i> PC-A1 (LAN 1)</span>
+                <button onclick="l3ClearGateway()" class="text-[9px] bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded hover:bg-rose-500/30">ลบ Gateway</button>
+              </div>
+              <div class="space-y-1 font-mono-code text-slate-300">
+                <div class="flex items-center justify-between">
+                  <span>IP:</span>
+                  <input type="text" id="l3-ipa" value="192.168.1.10" class="w-32 bg-slate-950 px-1 py-0.5 rounded border border-slate-700 text-right text-white" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>Subnet:</span>
+                  <input type="text" id="l3-maska" value="255.255.255.0" class="w-32 bg-slate-950 px-1 py-0.5 rounded border border-slate-700 text-right text-slate-400" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-amber-300 font-semibold">Gateway:</span>
+                  <input type="text" id="l3-gwa" value="192.168.1.1" placeholder="เว้นว่างได้" class="w-32 bg-slate-950 px-1 py-0.5 rounded border border-amber-500/50 text-right text-amber-200" />
+                </div>
+              </div>
+            </div>
+
+            <!-- PC-B1 Config Card (Right) -->
+            <div class="absolute right-6 bottom-3 w-56 bg-slate-900 border border-slate-700 rounded-lg p-3 text-[11px]">
+              <div class="font-bold text-purple-400 mb-1.5 flex items-center justify-between">
+                <span><i class="fa-solid fa-desktop mr-1"></i> PC-B1 (LAN 2)</span>
+                <span class="text-[9px] text-slate-500">Destination Host</span>
+              </div>
+              <div class="space-y-1 font-mono-code text-slate-300">
+                <div class="flex items-center justify-between">
+                  <span>IP:</span>
+                  <input type="text" id="l3-ipb" value="192.168.2.10" readonly class="w-32 bg-slate-950 px-1 py-0.5 rounded border border-slate-800 text-right text-slate-400" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>Subnet:</span>
+                  <input type="text" value="255.255.255.0" readonly class="w-32 bg-slate-950 px-1 py-0.5 rounded border border-slate-800 text-right text-slate-400" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <span>Gateway:</span>
+                  <input type="text" value="192.168.2.1" readonly class="w-32 bg-slate-950 px-1 py-0.5 rounded border border-slate-800 text-right text-purple-300" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- L3 Terminal Output Log -->
+          <div class="bg-black border border-slate-800 rounded-lg p-2.5 font-mono-code text-xs text-slate-300 mt-2">
+            <span class="text-slate-500 text-[10px]">Ping Output Trace:</span>
+            <div id="l3-log" class="text-emerald-400 mt-1">Ready for simulation...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= LAB 4: CORE SERVICES ================= -->
+      <div id="lab4-panel" class="lab-content hidden flex-1 flex flex-col space-y-4">
+        <!-- Top Toolbar & Server Controls -->
+        <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-4 shadow-lg flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+              <span class="text-xs text-slate-400">DNS Service:</span>
+              <button onclick="l4ToggleDns()" id="l4-dns-btn" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-600 text-white transition">ON</button>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-xs text-slate-400">Web Server (HTTP):</span>
+              <span class="px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-600/80 text-white">ON</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="l4StartDORA()" id="l4-dora-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 shadow">
+              <i class="fa-solid fa-arrows-spin"></i> Request IP (DHCP - DORA)
+            </button>
+            <button onclick="l4Reset()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs transition">
+              <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Services Diagram Area -->
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-between relative overflow-hidden min-h-[480px]">
+          <!-- Interactive Topology SVG -->
+          <div class="relative w-full h-[230px]">
+            <svg class="w-full h-full" viewBox="0 0 650 200">
+              <!-- Cables -->
+              <line x1="120" y1="100" x2="325" y2="100" stroke="#334155" stroke-width="3" />
+              <line x1="325" y1="100" x2="520" y2="50" stroke="#334155" stroke-width="3" />
+              <line x1="325" y1="100" x2="520" y2="150" stroke="#334155" stroke-width="3" />
+
+              <!-- Central Switch -->
+              <g transform="translate(300, 80)">
+                <rect width="50" height="40" rx="6" fill="#1e293b" stroke="#64748b" stroke-width="2" />
+                <text x="25" y="24" font-size="10" fill="#94a3b8" text-anchor="middle">SW</text>
+              </g>
+
+              <!-- Dynamic Service Packet -->
+              <g id="l4-packet" style="display: none; transition: transform 0.6s ease-in-out;">
+                <circle cx="0" cy="0" r="14" fill="#a855f7" id="l4-packet-circle" />
+                <text x="0" y="4" font-size="9" text-anchor="middle" fill="#ffffff" font-weight="bold" id="l4-packet-label">D</text>
+              </g>
+
+              <!-- PC Client Icon & Box -->
+              <g transform="translate(60, 60)">
+                <rect width="90" height="70" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" />
+                <text x="45" y="30" font-size="12" font-weight="bold" fill="#38bdf8" text-anchor="middle">PC Client</text>
+                <text x="45" y="48" font-size="9" fill="#94a3b8" text-anchor="middle" id="l4-client-ip-badge">IP: 0.0.0.0</text>
+              </g>
+
+              <!-- DHCP Server -->
+              <g transform="translate(480, 20)">
+                <rect width="130" height="55" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5" />
+                <text x="65" y="24" font-size="11" font-weight="bold" fill="#f59e0b" text-anchor="middle">DHCP Server</text>
+                <text x="65" y="42" font-size="9" fill="#cbd5e1" text-anchor="middle">Pool: 192.168.1.50-100</text>
+              </g>
+
+              <!-- Web & DNS Server -->
+              <g transform="translate(480, 120)">
+                <rect width="130" height="55" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.5" />
+                <text x="65" y="22" font-size="11" font-weight="bold" fill="#10b981" text-anchor="middle">Web & DNS Server</text>
+                <text x="65" y="38" font-size="9" fill="#cbd5e1" text-anchor="middle">192.168.1.2</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- DORA Progress Indicators -->
+          <div class="grid grid-cols-4 gap-2 my-2 text-center text-xs">
+            <div id="dora-d" class="p-2 rounded border border-slate-800 bg-slate-900/60 text-slate-400">
+              <span class="font-bold block text-sm">D</span> Discover (Broadcast)
+            </div>
+            <div id="dora-o" class="p-2 rounded border border-slate-800 bg-slate-900/60 text-slate-400">
+              <span class="font-bold block text-sm">O</span> Offer (Server IP)
+            </div>
+            <div id="dora-r" class="p-2 rounded border border-slate-800 bg-slate-900/60 text-slate-400">
+              <span class="font-bold block text-sm">R</span> Request (Client Accept)
+            </div>
+            <div id="dora-a" class="p-2 rounded border border-slate-800 bg-slate-900/60 text-slate-400">
+              <span class="font-bold block text-sm">A</span> ACK (Acknowledge)
+            </div>
+          </div>
+
+          <!-- Client IP Details Table (Lab 4 Sec 3.1) -->
+          <div class="bg-slate-900/80 border border-slate-800 rounded-lg p-3 text-xs font-mono-code grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-300">
+            <div><span class="text-slate-500 block text-[10px]">IPv4 Address:</span> <span id="l4-stat-ip" class="text-amber-300 font-bold">0.0.0.0</span></div>
+            <div><span class="text-slate-500 block text-[10px]">Subnet Mask:</span> <span id="l4-stat-mask" class="text-slate-400">0.0.0.0</span></div>
+            <div><span class="text-slate-500 block text-[10px]">Default Gateway:</span> <span id="l4-stat-gw" class="text-slate-400">0.0.0.0</span></div>
+            <div><span class="text-slate-500 block text-[10px]">DNS Server:</span> <span id="l4-stat-dns" class="text-slate-400">0.0.0.0</span></div>
+          </div>
+
+          <!-- Simulated Browser Bar (Sec 2 Step 5) -->
+          <div class="mt-4 bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-xl">
+            <!-- Browser Header -->
+            <div class="bg-slate-800 px-3 py-2 border-b border-slate-700 flex items-center gap-2">
+              <div class="flex space-x-1.5 mr-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+              </div>
+              <div class="flex-1 flex items-center bg-slate-950 rounded-lg px-2.5 py-1 border border-slate-700">
+                <i class="fa-solid fa-lock text-emerald-400 text-xs mr-2"></i>
+                <input type="text" id="l4-url-bar" value="http://www.networklab.com" class="bg-transparent border-0 text-xs text-slate-100 flex-1 focus:outline-none font-mono-code" />
+              </div>
+              <button onclick="l4BrowseUrl()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1 rounded text-xs font-semibold flex items-center gap-1">
+                Go <i class="fa-solid fa-arrow-right text-[10px]"></i>
+              </button>
+            </div>
+
+            <!-- Browser Content Render Area -->
+            <div id="l4-web-display" class="p-4 bg-white text-slate-800 min-h-[120px] text-xs flex flex-col justify-center items-center">
+              <div class="text-center text-slate-400">
+                <i class="fa-solid fa-globe text-3xl mb-2 text-slate-300"></i>
+                <p>พิมพ์ URL: <span class="font-mono text-indigo-600 font-semibold">http://www.networklab.com</span> หรือ <span class="font-mono text-indigo-600 font-semibold">http://192.168.1.2</span> แล้วกด Go</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= THEORY & CONCEPT SIDEBAR ================= -->
+    <aside class="lg:col-span-4 flex flex-col space-y-4">
+      <div class="bg-slate-800/90 border border-slate-700 rounded-xl p-5 shadow-lg backdrop-blur sticky top-20">
+        <div class="flex items-center gap-2 text-indigo-400 mb-3 border-b border-slate-700 pb-2">
+          <i class="fa-solid fa-book-open text-base"></i>
+          <h2 class="text-sm font-bold text-white uppercase tracking-wider" id="sidebar-title">สรุปแนวคิด: Lab 1</h2>
+        </div>
+
+        <div id="sidebar-content" class="text-xs text-slate-300 space-y-3 leading-relaxed">
+          <!-- Dynamic injected content based on active tab -->
+        </div>
+
+        <!-- Reference Mapping to OSI Model -->
+        <div class="mt-5 pt-3 border-t border-slate-700/80">
+          <div class="text-[11px] font-semibold text-slate-400 mb-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-layer-group text-cyan-400"></i> ความสัมพันธ์กับ OSI 7 Layers
+          </div>
+          <div id="sidebar-osi-tags" class="flex flex-wrap gap-1.5">
+            <!-- OSI Badges -->
+          </div>
+        </div>
+      </div>
+    </aside>
+
   </main>
 
+  <!-- ================= VIRTUAL LAB JAVASCRIPT ENGINE ================= -->
   <script>
-    // Global State
-    let currentLab = 1;
-    let netDiagnosticState = 'normal'; // 'normal' | 'cable_cut' | 'dns_down'
-    let pcGatewayConfig = '';
-    let arpCache = [];
-    let switchMacTable = [];
-    let isArpAnimating = false;
-    let isDoraAnimating = false;
+    // ----------------------------------------------------
+    // GLOBAL STATE & NAVIGATION
+    // ----------------------------------------------------
+    let currentTab = 'lab1';
 
-    // Theory definitions per lab
-    const theories = {
-      1: {
-        title: "Lab 1: การวินิจฉัยเครือข่ายด้วย CMD",
-        osi: ["Layer 3 (Network - IP/ICMP)", "Layer 7 (Application - DNS)"],
-        content: `
-          <p><strong>คำสั่งพื้นฐานในการตรวจสอบ:</strong></p>
-          <ul class="list-disc list-inside space-y-1 text-slate-300">
-            <li><code class="text-sky-300 font-mono">ipconfig</code>: ตรวจสอบ IP Address, Subnet Mask และ Default Gateway ประจำเครื่อง</li>
-            <li><code class="text-emerald-300 font-mono">ping 127.0.0.1</code>: Loopback Address ใช้ทดสอบว่า <em>TCP/IP Protocol Stack</em> ภายในเครื่องทำงานปกติหรือไม่ โดยสัญญาณไม่ได้วิ่งออกนอกการ์ดแลนจริง</li>
-            <li><code class="text-amber-300 font-mono">ping 8.8.8.8</code>: ตรวจสอบการเชื่อมต่อไปยังเครือข่ายอินเทอร์เน็ตภายนอกผ่านไอพีโดยตรง (ไม่พึ่ง DNS)</li>
-            <li><code class="text-rose-300 font-mono">ping &lt;domain&gt;</code>: ตรวจสอบทั้งการแปลงชื่อโฮสต์ผ่าน DNS และการรับส่งแพ็กเก็ต ICMP Echo</li>
+    const sidebarData = {
+      lab1: {
+        title: "ปฏิบัติการที่ 1: การวินิจฉัยด้วย CMD",
+        text: `
+          <p><strong>คำสั่งตรวจสอบและวินิจฉัย (Diagnostics):</strong></p>
+          <ul class="list-disc pl-4 space-y-1">
+            <li><span class="text-cyan-300 font-mono">ipconfig /all</span>: ตรวจสอบหมายเลข MAC, IPv4, Subnet Mask, Gateway และ DNS เพื่อยืนยัน Layer 2 & 3 Configuration</li>
+            <li><span class="text-cyan-300 font-mono">ping 127.0.0.1</span>: ตรวจสอบ Internal Loopback Address เพื่อยืนยันว่า TCP/IP Protocol Stack ใน OS พร้อมทำงาน</li>
+            <li><span class="text-cyan-300 font-mono">ping 8.8.8.8</span>: ตรวจสอบการส่งแพ็กเก็ต ICMP ออกสู่เครือข่ายภายนอกผ่าน IP โดยตรง</li>
+            <li><span class="text-cyan-300 font-mono">ping www.google.com</span>: ตรวจสอบว่าระบบสามารถแปลง Domain Name ผ่าน DNS Server และเข้าถึงโฮสต์ปลายทางได้</li>
           </ul>
+          <div class="p-2.5 rounded bg-slate-900 border border-slate-700 text-amber-200 mt-2">
+            💡 <em>ข้อสังเกต:</em> ในโหมด DNS ล่ม การ ping 8.8.8.8 ยังสำเร็จเพราะส่งหา IP โดยตรง แต่การ ping ชื่อเว็บจะล้มเหลวเพราะหาชื่อโฮสต์ไม่เจอ
+          </div>
         `,
-        tip: "💡 หาก ping 8.8.8.8 สำเร็จแต่ ping ชื่อเว็บไม่ติด แสดงว่าปัญหาเกิดจาก <strong>DNS Server</strong> ไม่ใช่สายหลุด!"
+        osi: ['Layer 3 (Network)', 'Layer 4 (Transport)', 'Layer 7 (Application)']
       },
-      2: {
-        title: "Lab 2: Switch & ARP (Address Resolution)",
-        osi: ["Layer 2 (Data Link - MAC & Frame)", "Layer 3 (Network - ARP)"],
-        content: `
-          <p><strong>Switch และโปรโตคอล ARP ทำงานอย่างไร?</strong></p>
-          <p>ในการส่งข้อมูลระดับ Data Link จำเป็นต้องใช้ <strong>MAC Address (Physical Address)</strong> แต่ผู้ใช้งานมักทราบเพียง IP Address</p>
-          <p><strong>1. ARP Request:</strong> เครื่องต้นทางจะส่งแพ็กเก็ตบรอดแคสต์ไปยังที่อยู่ <code class="text-sky-300">FF:FF:FF:FF:FF:FF</code> ทำให้ Switch กระจายสัญญาณออกทุกพอร์ต (Flooding)</p>
-          <p><strong>2. MAC Learning:</strong> เมื่อ Switch ได้รับเฟรมจากพอร์ตใด จะจดจำ MAC Address ของเครื่องส่งไว้ใน <strong>MAC Table (CAM Table)</strong> ทันที</p>
-          <p><strong>3. ARP Reply:</strong> เครื่องปลายทางส่งตอบกลับแบบ Unicast สวิตช์จึงส่งตรงเฉพาะผู้รับได้โดยไม่ต้องกระจายทั้งเครือข่าย</p>
-        `,
-        tip: "💡 Switch ทำงานที่ Layer 2 จึงไม่อ่าน IP Address ในการสลับสายข้อมูล แต่จะดูเฉพาะ Destination MAC Address ใน Ethernet Header"
-      },
-      3: {
-        title: "Lab 3: เราเตอร์และ Default Gateway",
-        osi: ["Layer 3 (Network - IP Routing)"],
-        content: `
-          <p><strong>ทำไมต้องมี Default Gateway?</strong></p>
-          <p>เมื่อเครื่องคอมพิวเตอร์ต้องการส่งข้อมูล คอมพิวเตอร์จะนำ <em>Subnet Mask</em> มาคำนวณแบบบิต (AND Operation) เพื่อตรวจสอบว่าปลายทางอยู่ใน <strong>เครือข่ายเดียวกัน (Intra-subnet)</strong> หรือไม่:</p>
-          <ul class="list-disc list-inside space-y-1">
-            <li><strong>วงเดียวกัน:</strong> ส่งตรงหาเครื่องเป้าหมายผ่านสวิตช์ด้วย MAC Address</li>
-            <li><strong>คนละวง (เช่น 192.168.1.x &rarr; 192.168.2.x):</strong> คอมพิวเตอร์ไม่สามารถส่งตรงได้ จะต้องส่งแพ็กเก็ตไปที่ <strong>Default Gateway (ขา Interface ของเราเตอร์)</strong> เพื่อให้เราเตอร์ค้นหาเส้นทาง (Routing) ส่งต่อไปยัง Subnet ปลายทาง</li>
+      lab2: {
+        title: "ปฏิบัติการที่ 2: Switch & ARP",
+        text: `
+          <p><strong>กลไกการทำงานของ Switch & Address Resolution Protocol:</strong></p>
+          <ul class="list-disc pl-4 space-y-1">
+            <li><strong>ARP Request:</strong> เป็นการส่งแพ็กเก็ตแบบ <em>Broadcast (FF:FF:FF:FF:FF:FF)</em> ไปยังทุกโฮสต์ในวงเพื่อถามหา MAC Address ของ IP ปลายทาง</li>
+            <li><strong>ARP Reply:</strong> โฮสต์ที่มี IP ตรงกันจะส่งคำตอบกลับแบบ <em>Unicast</em> ไปหาผู้ถามโดยตรง</li>
+            <li><strong>MAC Address Table:</strong> Switch ทำการเรียนรู้ (Self-learning) พอร์ตและ Source MAC Address จากเฟรมที่ไหลผ่าน</li>
           </ul>
+          <div class="p-2.5 rounded bg-slate-900 border border-slate-700 text-amber-200 mt-2">
+            ⚠️ <em>ข้อคิดวิเคราะห์ 3.2:</em> เมื่อตั้ง IP เป็น 192.168.2.30 จะอยู่คนละ Network ID กับ 192.168.1.0/24 ทำให้เครื่องตรวจพบว่าอยู่นอก Subnet และปฏิเสธการส่งผ่าน Layer 2 ท้องถิ่นโดยตรง
+          </div>
         `,
-        tip: "💡 หากไม่กรอก Default Gateway เครื่องจะไม่รู้ว่าจะส่งข้อมูลออกนอกวงแลนอย่างไร จะตอบกลับข้อความ <em>'Destination host unreachable'</em> ทันที"
+        osi: ['Layer 2 (Data Link)', 'Layer 1 (Physical)']
       },
-      4: {
-        title: "Lab 4: บริการพื้นฐาน DHCP & DNS",
-        osi: ["Layer 7 (Application - DHCP, DNS, HTTP)", "Layer 4 (Transport - UDP 67/68, 53)"],
-        content: `
-          <p><strong>กระบวนการ DORA ของ DHCP:</strong></p>
-          <ol class="list-decimal list-inside space-y-1">
-            <li><strong>Discover:</strong> ลูกข่ายตะโกนถามหา DHCP Server</li>
-            <li><strong>Offer:</strong> Server เสนอชุด IP, Gateway, DNS</li>
-            <li><strong>Request:</strong> ลูกข่ายขอใช้งาน IP ที่ได้รับข้อเสนอ</li>
-            <li><strong>Acknowledge:</strong> Server ตอบตกลงและบันทึกลงใน Lease Table</li>
+      lab3: {
+        title: "ปฏิบัติการที่ 3: Router & Gateway",
+        text: `
+          <p><strong>การสื่อสารข้ามเครือข่าย (Inter-VLAN / Routing):</strong></p>
+          <ul class="list-disc pl-4 space-y-1">
+            <li>เมื่อ Host ตรวจสอบ Subnet Mask แล้วพบว่าปลายทางอยู่ต่าง Subnet Host จะไม่ส่งหาปลายทางตรงๆ แต่จะส่งไปที่ <strong>Default Gateway</strong></li>
+            <li><strong>Router (Layer 3):</strong> ทำหน้าที่เชื่อมต่อเครือข่ายและสลับ Destination MAC ในระดับ Layer 2 Frame ก่อนส่งข้ามไปยังพอร์ตปลายทาง</li>
+          </ul>
+          <div class="p-2.5 rounded bg-slate-900 border border-slate-700 text-amber-200 mt-2">
+            ⚠️ <em>ข้อคิดวิเคราะห์ 3.2:</em> หากไม่มี Default Gateway เครื่องลูกข่ายจะไม่ทราบเส้นทางส่งออก และตัดการทำงานทันที (Host Unreachable)
+          </div>
+        `,
+        osi: ['Layer 3 (Network)', 'Layer 2 (Data Link)']
+      },
+      lab4: {
+        title: "ปฏิบัติการที่ 4: บริการ DHCP & DNS",
+        text: `
+          <p><strong>ขั้นตอนกระบวนการ D-O-R-A:</strong></p>
+          <ol class="list-decimal pl-4 space-y-0.5">
+            <li><strong>D (Discover):</strong> Client ส่ง Broadcast หา DHCP Server</li>
+            <li><strong>O (Offer):</strong> Server เสนอหมายเลข IP ให้พิจารณา</li>
+            <li><strong>R (Request):</strong> Client ยืนยันการขอใช้ IP นั้น</li>
+            <li><strong>A (Acknowledge):</strong> Server บันทึกและอนุมัติการจ่าย IP</li>
           </ol>
-          <p class="pt-2"><strong>DNS (Domain Name System):</strong> ทำหน้าที่เหมือนสมุดโทรศัพท์ของโลกอินเทอร์เน็ต แปลงชื่อที่มนุษย์จำง่ายเช่น <code class="text-sky-300">ku.ac.th</code> ให้กลายเป็น IP Address ตัวเลขเพื่อให้เบราว์เซอร์ส่งคำขอ HTTP/HTTPS ได้อย่างถูกต้อง</p>
+          <div class="p-2.5 rounded bg-slate-900 border border-slate-700 text-amber-200 mt-2">
+            💡 <em>ข้อคิดวิเคราะห์ 3.3:</em> เมื่อปิด DNS Server การเข้าเว็บด้วยชื่อจะล้มเหลวเพราะแปลงเป็น IP ไม่ได้ แต่การเข้าด้วย IP โดยตรงจะสำเร็จเพราะเบราว์เซอร์ส่ง HTTP Request ไปยังโฮสต์ปลายทางได้ทันที
+          </div>
         `,
-        tip: "💡 โปรโตคอล DHCP และ DNS ในขั้นตอนสืบค้นทำงานผ่าน <strong>UDP</strong> เนื่องจากต้องการความรวดเร็วและเป็นแพ็กเก็ตขนาดสั้น"
+        osi: ['Layer 7 (Application)', 'Layer 4 (Transport)']
       }
     };
 
-    function switchLab(labNum) {
-      currentLab = labNum;
-      
-      // Update tab buttons
-      for (let i = 1; i <= 4; i++) {
-        const btn = document.getElementById(`tab-btn-i` === `tab-btn-${i}` ? `tab-btn-${i}` : `tab-btn-${i}`);
-        const panel = document.getElementById(`lab-section-${i}`);
-        if (i === labNum) {
-          btn.className = "tab-btn px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-sky-400 bg-netcard shadow border border-sky-500/30";
-          btn.querySelector('span').className = "w-2 h-2 rounded-full bg-sky-400";
-          panel.classList.remove('hidden');
-        } else {
-          btn.className = "tab-btn px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-400 hover:text-white";
-          btn.querySelector('span').className = "w-2 h-2 rounded-full bg-slate-600";
-          panel.classList.add('hidden');
-        }
-      }
-
-      // Update Theory Panel
-      const th = theories[labNum];
-      document.getElementById('theory-title').innerText = th.title;
-      document.getElementById('theory-content').innerHTML = th.content;
-      document.getElementById('theory-tip').innerHTML = th.tip;
-      
-      const badgeContainer = document.getElementById('theory-osi-badges');
-      badgeContainer.innerHTML = th.osi.map(layer => `
-        <span class="px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800 text-[10px] font-mono">
-          ${layer}
-        </span>
-      `).join('');
+    function updateSidebar(tabKey) {
+      const data = sidebarData[tabKey];
+      document.getElementById('sidebar-title').innerText = data.title;
+      document.getElementById('sidebar-content').innerHTML = data.text;
+      const osiContainer = document.getElementById('sidebar-osi-tags');
+      osiContainer.innerHTML = '';
+      data.osi.forEach(layer => {
+        const badge = document.createElement('span');
+        badge.className = 'px-2 py-0.5 rounded-full bg-slate-700 text-[10px] text-cyan-300 font-mono';
+        badge.innerText = layer;
+        osiContainer.appendChild(badge);
+      });
     }
 
-    const cmdInput = document.getElementById('cmd-input');
-    const cmdOutput = document.getElementById('cmd-output');
+    function switchTab(tabId) {
+      currentTab = tabId;
+      // Tab Buttons styling
+      document.querySelectorAll('.lab-tab-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/30');
+        btn.classList.add('bg-slate-800/80', 'text-slate-400');
+      });
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md', 'shadow-indigo-600/30');
+      activeBtn.classList.remove('bg-slate-800/80', 'text-slate-400');
 
-    function setNetState(state) {
-      netDiagnosticState = state;
-      const states = {
-        'normal': { id: 'btn-state-normal', activeClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' },
-        'cable_cut': { id: 'btn-state-cable', activeClass: 'bg-rose-500/20 text-rose-300 border-rose-500/40' },
-        'dns_down': { id: 'btn-state-dns', activeClass: 'bg-amber-500/20 text-amber-300 border-amber-500/40' }
-      };
+      // Panels visibility
+      document.querySelectorAll('.lab-content').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`${tabId}-panel`).classList.remove('hidden');
 
-      ['btn-state-normal', 'btn-state-cable', 'btn-state-dns'].forEach(btnId => {
-        const b = document.getElementById(btnId);
-        b.className = 'state-btn text-xs px-3 py-1 rounded-md font-medium transition text-slate-400 hover:text-white';
+      updateSidebar(tabId);
+    }
+
+    // ----------------------------------------------------
+    // LAB 1: CMD SIMULATOR
+    // ----------------------------------------------------
+    let lab1Scenario = 'normal'; // 'normal' | 'cable_cut' | 'dns_failure'
+
+    function setLab1Mode(mode) {
+      lab1Scenario = mode;
+      const btnNormal = document.getElementById('l1-btn-normal');
+      const btnCable = document.getElementById('l1-btn-cable');
+      const btnDns = document.getElementById('l1-btn-dns');
+
+      [btnNormal, btnCable, btnDns].forEach(btn => {
+        btn.className = 'flex-1 sm:flex-initial px-3 py-1.5 rounded-md text-xs font-medium transition text-slate-400 hover:text-slate-200';
       });
 
-      const current = states[state];
-      document.getElementById(current.id).className = `state-btn text-xs px-3 py-1 rounded-md font-medium transition border ${current.activeClass}`;
-
-      let msg = '';
-      if(state === 'normal') msg = '[ระบบ]: เครือข่ายเชื่อมต่อปกติ (Gateway: 192.168.1.1, DNS: 8.8.8.8)';
-      if(state === 'cable_cut') msg = '[แจ้งเตือน]: ถอดสาย LAN ออกแล้ว (Media disconnected)';
-      if(state === 'dns_down') msg = '[แจ้งเตือน]: DNS Server 8.8.8.8 ไม่ตอบสนอง (DNS Timeout)';
-      
-      appendCmdOutput(`<div class="text-sky-400 text-xs italic my-1">${msg}</div>`);
-    }
-
-    function runSampleCmd(cmdText) {
-      cmdInput.value = cmdText;
-      executeCmd(cmdText);
-      cmdInput.value = '';
-    }
-
-    cmdInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const command = cmdInput.value.trim();
-        if (command) {
-          executeCmd(command);
-          cmdInput.value = '';
-        }
+      if (mode === 'normal') {
+        btnNormal.className = 'flex-1 sm:flex-initial px-3 py-1.5 rounded-md text-xs font-medium transition bg-emerald-600 text-white shadow';
+        printTerminalLine("<span class='text-emerald-400'>[System Alert]: สลับสถานะเป็น 'โหมดปกติ (Normal / Online)'</span>");
+      } else if (mode === 'cable_cut') {
+        btnCable.className = 'flex-1 sm:flex-initial px-3 py-1.5 rounded-md text-xs font-medium transition bg-rose-600 text-white shadow';
+        printTerminalLine("<span class='text-rose-400'>[System Alert]: สลับสถานะเป็น 'สาย LAN หลุด (Cable Disconnected)'</span>");
+      } else if (mode === 'dns_failure') {
+        btnDns.className = 'flex-1 sm:flex-initial px-3 py-1.5 rounded-md text-xs font-medium transition bg-amber-600 text-white shadow';
+        printTerminalLine("<span class='text-amber-400'>[System Alert]: สลับสถานะเป็น 'DNS ขัดข้อง (DNS Failure)'</span>");
       }
-    });
-
-    function appendCmdOutput(html) {
-      cmdOutput.insertAdjacentHTML('beforeend', html);
-      cmdOutput.scrollTop = cmdOutput.scrollHeight;
     }
 
-    function executeCmd(rawCmd) {
-      const cmd = rawCmd.trim().toLowerCase();
-      appendCmdOutput(`<div class="text-emerald-400 flex items-center gap-1 font-mono"><span class="text-slate-500">C:\\Users\\Student&gt;</span> ${rawCmd}</div>`);
+    function printTerminalLine(html) {
+      const output = document.getElementById('cmd-output');
+      const line = document.createElement('div');
+      line.innerHTML = html;
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    }
 
-      if (cmd === 'cls' || cmd === 'clear') {
-        cmdOutput.innerHTML = '';
-        return;
-      }
+    function clearTerminal() {
+      const output = document.getElementById('cmd-output');
+      output.innerHTML = `
+        <div>Microsoft Windows [Version 10.0.19045.3803]</div>
+        <div>(c) Microsoft Corporation. All rights reserved.</div>
+      `;
+    }
 
-      if (cmd === 'help') {
-        appendCmdOutput(`
-          <div class="text-slate-300 py-1 space-y-1">
-            <p class="font-bold text-sky-400">คำสั่งที่โปรแกรมจำลองรองรับ:</p>
-            <p><span class="text-amber-300">ipconfig</span> - แสดงข้อมูลการกำหนดค่า IP พื้นฐาน</p>
-            <p><span class="text-amber-300">ipconfig /all</span> - แสดงการกำหนดค่าแบบละเอียดรวมถึง MAC และ DNS</p>
-            <p><span class="text-amber-300">ping 127.0.0.1</span> - ตรวจสอบ Loopback Interface</p>
-            <p><span class="text-amber-300">ping 8.8.8.8</span> - ทดสอบส่งแพ็กเก็ตไปยัง Public IP</p>
-            <p><span class="text-amber-300">ping www.google.com</span> - ทดสอบส่งแพ็กเก็ตผ่านชื่อ Hostname</p>
-            <p><span class="text-amber-300">cls</span> - ล้างข้อความบนหน้าจอ</p>
-          </div>
-        `);
+    function quickCmd(cmd) {
+      document.getElementById('cmd-input').value = cmd;
+      document.getElementById('cmd-input').focus();
+    }
+
+    function handleCmdSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('cmd-input');
+      const rawCmd = input.value.trim();
+      if (!rawCmd) return;
+
+      printTerminalLine(`C:\\Users\\Student&gt; <span class='text-white'>${rawCmd}</span>`);
+      input.value = '';
+
+      const cmd = rawCmd.toLowerCase();
+
+      if (cmd === 'cls') {
+        clearTerminal();
         return;
       }
 
       if (cmd === 'ipconfig') {
-        if (netDiagnosticState === 'cable_cut') {
-          appendCmdOutput(`
-            <div class="text-slate-300 py-1">
-              Windows IP Configuration<br><br>
-              Ethernet adapter Ethernet0:<br>
-              &nbsp;&nbsp;Media State . . . . . . . . . . . : Media disconnected<br>
-              &nbsp;&nbsp;Connection-specific DNS Suffix . : 
-            </div>
+        printTerminalLine(`
+Windows IP Configuration<br><br>
+Ethernet adapter Ethernet0:<br>
+&nbsp;&nbsp;&nbsp;Connection-specific DNS Suffix . : localdomain<br>
+&nbsp;&nbsp;&nbsp;Link-local IPv6 Address . . . . . : fe80::5138:7091:df8a:6371%4<br>
+&nbsp;&nbsp;&nbsp;IPv4 Address. . . . . . . . . . . : 192.168.1.15<br>
+&nbsp;&nbsp;&nbsp;Subnet Mask . . . . . . . . . . . : 255.255.255.0<br>
+&nbsp;&nbsp;&nbsp;Default Gateway . . . . . . . . . : 192.168.1.1
+        `);
+      } else if (cmd === 'ipconfig /all') {
+        printTerminalLine(`
+Windows IP Configuration<br><br>
+&nbsp;&nbsp;&nbsp;Host Name . . . . . . . . . . . . : DESKTOP-LABPC01<br>
+&nbsp;&nbsp;&nbsp;Primary Dns Suffix . . . . . . . : <br>
+&nbsp;&nbsp;&nbsp;Node Type . . . . . . . . . . . . : Hybrid<br>
+&nbsp;&nbsp;&nbsp;IP Routing Enabled. . . . . . . . : No<br>
+&nbsp;&nbsp;&nbsp;WINS Proxy Enabled. . . . . . . . : No<br><br>
+Ethernet adapter Ethernet0:<br>
+&nbsp;&nbsp;&nbsp;Connection-specific DNS Suffix . : localdomain<br>
+&nbsp;&nbsp;&nbsp;Description . . . . . . . . . . . : Intel(R) 82574L Gigabit Network Connection<br>
+&nbsp;&nbsp;&nbsp;Physical Address. . . . . . . . . : <span class="text-yellow-300 font-bold">00-50-56-C0-00-08</span><br>
+&nbsp;&nbsp;&nbsp;DHCP Enabled. . . . . . . . . . . : Yes<br>
+&nbsp;&nbsp;&nbsp;IPv4 Address. . . . . . . . . . . : <span class="text-yellow-300 font-bold">192.168.1.15</span>(Preferred)<br>
+&nbsp;&nbsp;&nbsp;Subnet Mask . . . . . . . . . . . : <span class="text-yellow-300 font-bold">255.255.255.0</span><br>
+&nbsp;&nbsp;&nbsp;Default Gateway . . . . . . . . . : <span class="text-yellow-300 font-bold">192.168.1.1</span><br>
+&nbsp;&nbsp;&nbsp;DHCP Server . . . . . . . . . . . : 192.168.1.1<br>
+&nbsp;&nbsp;&nbsp;DNS Servers . . . . . . . . . . . : <span class="text-yellow-300 font-bold">8.8.8.8</span>
+        `);
+      } else if (cmd === 'ping 127.0.0.1') {
+        printTerminalLine(`
+Pinging 127.0.0.1 with 32 bytes of data:<br>
+Reply from 127.0.0.1: bytes=32 time&lt;1ms TTL=128<br>
+Reply from 127.0.0.1: bytes=32 time&lt;1ms TTL=128<br>
+Reply from 127.0.0.1: bytes=32 time&lt;1ms TTL=128<br>
+Reply from 127.0.0.1: bytes=32 time&lt;1ms TTL=128<br><br>
+Ping statistics for 127.0.0.1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),<br>
+Approximate round trip times in milli-seconds:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Minimum = 0ms, Maximum = 0ms, Average = 0ms
+        `);
+      } else if (cmd === 'ping 192.168.1.1') {
+        if (lab1Scenario === 'cable_cut') {
+          printTerminalLine(`
+Pinging 192.168.1.1 with 32 bytes of data:<br>
+<span class="text-rose-400">PING: transmit failed. General failure.</span><br>
+<span class="text-rose-400">PING: transmit failed. General failure.</span><br>
+<span class="text-rose-400">PING: transmit failed. General failure.</span><br>
+<span class="text-rose-400">PING: transmit failed. General failure.</span><br><br>
+Ping statistics for 192.168.1.1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
           `);
         } else {
-          appendCmdOutput(`
-            <div class="text-slate-300 py-1">
-              Windows IP Configuration<br><br>
-              Ethernet adapter Ethernet0:<br>
-              &nbsp;&nbsp;Connection-specific DNS Suffix . : lan.local<br>
-              &nbsp;&nbsp;IPv4 Address. . . . . . . . . . . : 192.168.1.105<br>
-              &nbsp;&nbsp;Subnet Mask . . . . . . . . . . . : 255.255.255.0<br>
-              &nbsp;&nbsp;Default Gateway . . . . . . . . . : 192.168.1.1
-            </div>
+          printTerminalLine(`
+Pinging 192.168.1.1 with 32 bytes of data:<br>
+Reply from 192.168.1.1: bytes=32 time=1ms TTL=64<br>
+Reply from 192.168.1.1: bytes=32 time=1ms TTL=64<br>
+Reply from 192.168.1.1: bytes=32 time=1ms TTL=64<br>
+Reply from 192.168.1.1: bytes=32 time=1ms TTL=64<br><br>
+Ping statistics for 192.168.1.1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
           `);
         }
-        return;
-      }
-
-      if (cmd === 'ipconfig /all') {
-        if (netDiagnosticState === 'cable_cut') {
-          appendCmdOutput(`
-            <div class="text-slate-300 py-1">
-              Windows IP Configuration<br><br>
-              &nbsp;&nbsp;Host Name . . . . . . . . . . . . : LAB-PC-01<br>
-              &nbsp;&nbsp;Primary Dns Suffix  . . . . . . . : <br>
-              &nbsp;&nbsp;Node Type . . . . . . . . . . . . : Hybrid<br>
-              &nbsp;&nbsp;IP Routing Enabled. . . . . . . . : No<br><br>
-              Ethernet adapter Ethernet0:<br>
-              &nbsp;&nbsp;Media State . . . . . . . . . . . : Media disconnected<br>
-              &nbsp;&nbsp;Description . . . . . . . . . . . : Realtek PCIe GbE Family Controller<br>
-              &nbsp;&nbsp;Physical Address. . . . . . . . . : 00-1A-2B-4C-8F-11
-            </div>
+      } else if (cmd === 'ping 8.8.8.8') {
+        if (lab1Scenario === 'cable_cut') {
+          printTerminalLine(`
+Pinging 8.8.8.8 with 32 bytes of data:<br>
+<span class="text-rose-400">PING: transmit failed. General failure.</span><br>
+<span class="text-rose-400">Destination host unreachable.</span><br>
+<span class="text-rose-400">Destination host unreachable.</span><br>
+<span class="text-rose-400">Destination host unreachable.</span><br><br>
+Ping statistics for 8.8.8.8:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
           `);
         } else {
-          appendCmdOutput(`
-            <div class="text-slate-300 py-1">
-              Windows IP Configuration<br><br>
-              &nbsp;&nbsp;Host Name . . . . . . . . . . . . : LAB-PC-01<br>
-              &nbsp;&nbsp;Primary Dns Suffix  . . . . . . . : <br>
-              &nbsp;&nbsp;IP Routing Enabled. . . . . . . . : No<br><br>
-              Ethernet adapter Ethernet0:<br>
-              &nbsp;&nbsp;Description . . . . . . . . . . . : Realtek PCIe GbE Family Controller<br>
-              &nbsp;&nbsp;Physical Address. . . . . . . . . : 00-1A-2B-4C-8F-11<br>
-              &nbsp;&nbsp;DHCP Enabled. . . . . . . . . . . : Yes<br>
-              &nbsp;&nbsp;IPv4 Address. . . . . . . . . . . : 192.168.1.105(Preferred)<br>
-              &nbsp;&nbsp;Subnet Mask . . . . . . . . . . . : 255.255.255.0<br>
-              &nbsp;&nbsp;Default Gateway . . . . . . . . . : 192.168.1.1<br>
-              &nbsp;&nbsp;DHCP Server . . . . . . . . . . . : 192.168.1.1<br>
-              &nbsp;&nbsp;DNS Servers . . . . . . . . . . . : ${netDiagnosticState === 'dns_down' ? '10.0.0.99 (Unreachable)' : '8.8.8.8'}
-            </div>
+          printTerminalLine(`
+Pinging 8.8.8.8 with 32 bytes of data:<br>
+Reply from 8.8.8.8: bytes=32 time=18ms TTL=117<br>
+Reply from 8.8.8.8: bytes=32 time=17ms TTL=117<br>
+Reply from 8.8.8.8: bytes=32 time=19ms TTL=117<br>
+Reply from 8.8.8.8: bytes=32 time=18ms TTL=117<br><br>
+Ping statistics for 8.8.8.8:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
           `);
         }
-        return;
-      }
-
-      if (cmd.startsWith('ping')) {
-        handlePingCommand(cmd);
-        return;
-      }
-
-      appendCmdOutput(`<div class="text-rose-400">'${rawCmd}' ไม่เป็นที่รู้จักว่าเป็นคำสั่งภายในหรือภายนอก พิมพ์ <span class="text-sky-400">help</span> เพื่อดูรายการคำสั่ง</div>`);
-    }
-
-    function handlePingCommand(cmd) {
-      const parts = cmd.split(/\s+/);
-      const target = parts[1];
-
-      if (!target) {
-        appendCmdOutput(`<div class="text-rose-400">รูปแบบคำสั่งไม่ถูกต้อง: กรุณาระบุ IP หรือ Hostname เช่น ping 8.8.8.8</div>`);
-        return;
-      }
-
-      // Loopback test
-      if (target === '127.0.0.1' || target === 'localhost') {
-        appendCmdOutput(`
-          <div class="text-slate-300 py-1">
-            Pinging 127.0.0.1 with 32 bytes of data:<br>
-            Reply from 127.0.0.1: bytes=32 time&lt;1ms TTL=128<br>
-            Reply from 127.0.0.1: bytes=32 time&lt;1ms TTL=128<br>
-            Reply from 127.0.0.1: bytes=32 time&lt;1ms TTL=128<br>
-            Reply from 127.0.0.1: bytes=32 time&lt;1ms TTL=128<br><br>
-            Ping statistics for 127.0.0.1:<br>
-            &nbsp;&nbsp;Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),<br>
-            <span class="text-emerald-400">ผลการวินิจฉัย: TCP/IP Protocol Stack ภายในเครื่องทำงานสมบูรณ์ดี</span>
-          </div>
-        `);
-        return;
-      }
-
-      // If cable is unplugged, everything else fails with Transmit failed
-      if (netDiagnosticState === 'cable_cut') {
-        appendCmdOutput(`
-          <div class="text-rose-400 py-1">
-            Pinging ${target} with 32 bytes of data:<br>
-            PING: transmit failed. General failure.<br>
-            PING: transmit failed. General failure.<br>
-            PING: transmit failed. General failure.<br>
-            PING: transmit failed. General failure.<br><br>
-            Ping statistics for ${target}:<br>
-            &nbsp;&nbsp;Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)<br>
-            <span class="text-rose-300 font-bold">สาเหตุ: การเชื่อมต่อระดับฮาร์ดแวร์/สาย LAN ถูกตัดขาด (Layer 1/2 Issue)</span>
-          </div>
-        `);
-        return;
-      }
-
-      // Target is IP 8.8.8.8
-      if (target === '8.8.8.8') {
-        appendCmdOutput(`
-          <div class="text-slate-300 py-1">
-            Pinging 8.8.8.8 with 32 bytes of data:<br>
-            Reply from 8.8.8.8: bytes=32 time=18ms TTL=117<br>
-            Reply from 8.8.8.8: bytes=32 time=17ms TTL=117<br>
-            Reply from 8.8.8.8: bytes=32 time=19ms TTL=117<br>
-            Reply from 8.8.8.8: bytes=32 time=18ms TTL=117<br><br>
-            Ping statistics for 8.8.8.8:<br>
-            &nbsp;&nbsp;Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),<br>
-            Approximate round trip times in milli-seconds:<br>
-            &nbsp;&nbsp;Minimum = 17ms, Maximum = 19ms, Average = 18ms<br>
-            <span class="text-emerald-400 font-semibold">ผลการวินิจฉัย: การเชื่อมต่อระดับ Layer 3 ออกสู่อินเทอร์เน็ตปกติ</span>
-          </div>
-        `);
-        return;
-      }
-
-      // Target is Hostname (e.g., www.google.com)
-      if (target.includes('google') || target.includes('.')) {
-        if (netDiagnosticState === 'dns_down') {
-          appendCmdOutput(`
-            <div class="text-amber-400 py-1">
-              Ping request could not find host ${target}. Please check the name and try again.<br><br>
-              <span class="text-amber-300 font-bold">สาเหตุ: คอมพิวเตอร์ไม่สามารถแปลงชื่อโฮสต์เป็นไอพีได้ เนื่องจาก DNS Server ขัดข้อง (DNS Resolution Failed)</span>
-            </div>
+      } else if (cmd === 'ping www.google.com') {
+        if (lab1Scenario === 'cable_cut') {
+          printTerminalLine(`
+<span class="text-rose-400">Ping request could not find host www.google.com. Please check the name and try again.</span>
+          `);
+        } else if (lab1Scenario === 'dns_failure') {
+          printTerminalLine(`
+<span class="text-amber-400">Ping request could not find host www.google.com. Please check the name and try again.</span>
           `);
         } else {
-          appendCmdOutput(`
-            <div class="text-slate-300 py-1">
-              Pinging ${target} [142.250.199.100] with 32 bytes of data:<br>
-              Reply from 142.250.199.100: bytes=32 time=22ms TTL=115<br>
-              Reply from 142.250.199.100: bytes=32 time=21ms TTL=115<br>
-              Reply from 142.250.199.100: bytes=32 time=23ms TTL=115<br>
-              Reply from 142.250.199.100: bytes=32 time=22ms TTL=115<br><br>
-              Ping statistics for 142.250.199.100:<br>
-              &nbsp;&nbsp;Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),<br>
-              <span class="text-emerald-400">ผลการวินิจฉัย: ทั้งกระบวนการ DNS และการรับส่ง ICMP สำเร็จครบถ้วน</span>
-            </div>
+          printTerminalLine(`
+Pinging www.google.com [142.250.196.68] with 32 bytes of data:<br>
+Reply from 142.250.196.68: bytes=32 time=22ms TTL=116<br>
+Reply from 142.250.196.68: bytes=32 time=21ms TTL=116<br>
+Reply from 142.250.196.68: bytes=32 time=23ms TTL=116<br>
+Reply from 142.250.196.68: bytes=32 time=22ms TTL=116<br><br>
+Ping statistics for 142.250.196.68:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
           `);
         }
-        return;
-      }
-
-      // Default ping other IP
-      appendCmdOutput(`
-        <div class="text-slate-300 py-1">
-          Pinging ${target} with 32 bytes of data:<br>
-          Request timed out.<br>
-          Request timed out.<br>
-          Request timed out.<br>
-          Request timed out.<br>
-          Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
-        </div>
-      `);
-    }
-
-    const switchPos = { x: 350, y: 170 };
-    const pcAPos = { x: 120, y: 80 };
-    const pcBPos = { x: 580, y: 80 };
-    const pcCPos = { x: 350, y: 230 };
-
-    function triggerArpSim() {
-      if (isArpAnimating) return;
-      isArpAnimating = true;
-      const statusText = document.getElementById('arp-status-text');
-      const btn = document.getElementById('btn-arp-send');
-      btn.disabled = true;
-      btn.classList.add('opacity-50');
-
-      const p1 = document.getElementById('packet-1');
-      const p2 = document.getElementById('packet-2');
-
-      // Step 1: Check if PC-A already knows PC-B MAC
-      const hasArp = arpCache.some(e => e.ip === '192.168.1.20');
-
-      if (!hasArp) {
-        // Stage 1: ARP Request (Broadcast)
-        statusText.innerText = 'ขั้นตอน 1/4: PC-A ไม่รู้ MAC ของ PC-B -> ส่ง ARP Request (Broadcast: FF:FF:FF:FF:FF:FF)';
-        moveDot(p1, pcAPos, switchPos, 800, () => {
-          // Switch learns PC-A MAC
-          recordSwitchMac('Fa0/1', '00:1A:2B:AA:00:01');
-          
-          statusText.innerText = 'ขั้นตอน 2/4: Switch เรียนรู้ MAC ของ PC-A และกระจายสัญญาณ (Flooding) หา PC-B และ PC-C';
-          // Flooding from switch to PC-B and PC-C
-          moveDot(p1, switchPos, pcBPos, 800);
-          moveDot(p2, switchPos, pcCPos, 800, () => {
-            // PC-C drops packet (shows visual hint)
-            statusText.innerText = 'ขั้นตอน 3/4: PC-C ปฏิเสธ (ไม่ใช่ไอพีของตน) ส่วน PC-B ตอบกลับ ARP Reply (Unicast)';
-            
-            // PC-B replies to Switch
-            setTimeout(() => {
-              moveDot(p1, pcBPos, switchPos, 800, () => {
-                recordSwitchMac('Fa0/2', '00:1A:2B:BB:00:02');
-                // Switch forwards to PC-A directly
-                moveDot(p1, switchPos, pcAPos, 800, () => {
-                  recordArpCache('192.168.1.20', '00:1A:2B:BB:00:02');
-                  statusText.innerText = 'ขั้นตอน 4/4: PC-A บันทึก ARP Cache แล้วส่ง ICMP Echo (Ping) แบบ Unicast ตรงสู่ PC-B!';
-                  
-                  // Now send actual ICMP Ping
-                  setTimeout(() => {
-                    sendUnicastIcmp(p1, pcAPos, switchPos, pcBPos, () => {
-                      statusText.innerText = 'สำเร็จ: ส่ง Ping และได้รับ Reply ครบถ้วน (Switch ส่งต่อแบบ Unicast 100%)';
-                      btn.disabled = false;
-                      btn.classList.remove('opacity-50');
-                      isArpAnimating = false;
-                    });
-                  }, 600);
-                });
-              });
-            }, 700);
-          });
-        });
+      } else if (cmd === 'help') {
+        printTerminalLine(`คำสั่งที่รองรับ: ipconfig, ipconfig /all, ping 127.0.0.1, ping 192.168.1.1, ping 8.8.8.8, ping www.google.com, cls, help`);
       } else {
-        // Already cached, send Unicast directly
-        statusText.innerText = 'ข้อมูลอยู่ใน ARP Cache แล้ว: PC-A ส่ง ICMP Unicast ผ่าน Switch ตรงไปยัง PC-B ทันที';
-        sendUnicastIcmp(p1, pcAPos, switchPos, pcBPos, () => {
-          statusText.innerText = 'สำเร็จ: ส่ง Ping (ICMP) แบบ Unicast เรียบร้อยโดยไม่ต้อง Broadcast ถามใหม่อีก';
-          btn.disabled = false;
-          btn.classList.remove('opacity-50');
-          isArpAnimating = false;
-        });
+        printTerminalLine(`'${rawCmd}' is not recognized as an internal or external command, operable program or batch file.`);
       }
     }
 
-    function sendUnicastIcmp(dot, from, sw, to, callback) {
-      moveDot(dot, from, sw, 600, () => {
-        moveDot(dot, sw, to, 600, () => {
-          // Return reply
-          moveDot(dot, to, sw, 600, () => {
-            moveDot(dot, sw, from, 600, () => {
-              if (callback) callback();
-            });
-          });
-        });
-      });
-    }
-
-    function moveDot(dot, start, end, duration, onComplete) {
-      dot.setAttribute('opacity', '1');
-      const startTime = performance.now();
-
-      function step(now) {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const curX = start.x + (end.x - start.x) * progress;
-        const curY = start.y + (end.y - start.y) * progress;
-
-        dot.setAttribute('cx', curX);
-        dot.setAttribute('cy', curY);
-
-        if (progress < 1) {
-          requestAnimationFrame(step);
-        } else {
-          if (onComplete) onComplete();
-        }
-      }
-      requestAnimationFrame(step);
-    }
-
-    function recordSwitchMac(port, mac) {
-      if (!switchMacTable.some(entry => entry.mac === mac)) {
-        switchMacTable.push({ vlan: 'VLAN 1', mac, type: 'DYNAMIC', port });
-        renderSwitchTable();
-      }
-    }
-
-    function renderSwitchTable() {
-      const tbody = document.getElementById('switch-mac-tbody');
-      if (switchMacTable.length === 0) {
-        tbody.innerHTML = `<tr id="row-empty-mac"><td colspan="4" class="py-3 text-center text-slate-500 italic">ยังไม่มีข้อมูลในตาราง (รอรับเฟรม)</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = switchMacTable.map(item => `
-        <tr class="hover:bg-slate-800/40 text-slate-200">
-          <td class="py-1.5 px-2">${item.vlan}</td>
-          <td class="py-1.5 px-2 text-sky-400 font-bold">${item.mac}</td>
-          <td class="py-1.5 px-2 text-emerald-400">${item.type}</td>
-          <td class="py-1.5 px-2 font-bold">${item.port}</td>
-        </tr>
-      `).join('');
-    }
-
-    function recordArpCache(ip, mac) {
-      if (!arpCache.some(e => e.ip === ip)) {
-        arpCache.push({ ip, mac, type: 'dynamic' });
-        renderArpTable();
-      }
-    }
-
-    function renderArpTable() {
-      const tbody = document.getElementById('pc-arp-tbody');
-      if (arpCache.length === 0) {
-        tbody.innerHTML = `<tr id="row-empty-arp"><td colspan="3" class="py-3 text-center text-slate-500 italic">ว่างเปล่า (Empty Cache)</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = arpCache.map(item => `
-        <tr class="hover:bg-slate-800/40 text-slate-200">
-          <td class="py-1.5 px-2 text-emerald-400">${item.ip}</td>
-          <td class="py-1.5 px-2 font-bold">${item.mac}</td>
-          <td class="py-1.5 px-2 text-slate-400">${item.type}</td>
-        </tr>
-      `).join('');
-    }
-
-    function resetArpLab() {
-      arpCache = [];
-      switchMacTable = [];
-      renderSwitchTable();
-      renderArpTable();
-      document.getElementById('packet-1').setAttribute('opacity', '0');
-      document.getElementById('packet-2').setAttribute('opacity', '0');
-      document.getElementById('arp-status-text').innerText = 'ล้างข้อมูลตารางสำเร็จ (พร้อมเริ่มจำลองใหม่)';
-    }
-
-    function applyGatewaySetting() {
-      const val = document.getElementById('input-gateway').value.trim();
-      pcGatewayConfig = val;
-      const label = document.getElementById('svg-gw-label');
-      if (val) {
-        label.textContent = `GW: ${val}`;
-        label.setAttribute('fill', '#38bdf8');
-      } else {
-        label.textContent = 'GW: [ไม่ระบุ]';
-        label.setAttribute('fill', '#fbbf24');
-      }
-      document.getElementById('gw-result-text').innerHTML = `<span class="text-sky-400">บันทึกค่า Gateway: ${val || '[ไม่ได้ตั้งค่า]'} เรียบร้อย</span>`;
-    }
-
-    function testGatewayPing() {
-      const resultText = document.getElementById('gw-result-text');
-      const packet = document.getElementById('router-packet');
-      const pcAPosR = { x: 120, y: 130 };
-      const routerPos = { x: 380, y: 130 };
-      const pcBPosR = { x: 640, y: 130 };
-
-      // Case 1: No gateway configured or incorrect
-      if (!pcGatewayConfig) {
-        resultText.innerHTML = `
-          <span class="text-rose-400 font-bold">❌ ส่งไม่สำเร็จ (Unreachable):</span><br>
-          PC-Source ตรวจพบว่า 192.168.2.10 อยู่นอกเครือข่ายตนเอง (192.168.1.0/24) แต่ไม่มี Default Gateway จึงทิ้งแพ็กเก็ตทันที!
-        `;
-        // Jiggle dot on PC-Source
-        moveDot(packet, pcAPosR, { x: 150, y: 130 }, 250, () => {
-          moveDot(packet, { x: 150, y: 130 }, pcAPosR, 250, () => {
-            packet.setAttribute('opacity', '0');
-          });
-        });
-        return;
-      }
-
-      if (pcGatewayConfig !== '192.168.1.1') {
-        resultText.innerHTML = `
-          <span class="text-rose-400 font-bold">❌ ผิดพลาด (Gateway Timeout):</span><br>
-          ระบุ Gateway เป็น <code class="text-amber-300 font-mono">${pcGatewayConfig}</code> ซึ่งไม่ใช่ IP ของ Interface Router ฝั่ง Subnet 1 (คำใบ้: ต้องเป็น 192.168.1.1)
-        `;
-        moveDot(packet, pcAPosR, { x: 230, y: 130 }, 400, () => {
-          packet.setAttribute('opacity', '0');
-        });
-        return;
-      }
-
-      // Case 2: Correct gateway configured (192.168.1.1)
-      resultText.innerHTML = `<span class="text-amber-400">กำลังส่งแพ็กเก็ตผ่าน Router...</span>`;
-      moveDot(packet, pcAPosR, routerPos, 700, () => {
-        resultText.innerHTML = `<span class="text-sky-400">Router ตรวจสอบ Routing Table แล้วส่งต่อข้าม Subnet ไปยัง 192.168.2.10</span>`;
-        moveDot(packet, routerPos, pcBPosR, 700, () => {
-          // Reply trip
-          resultText.innerHTML = `<span class="text-indigo-400">PC-Target ตอบกลับ ICMP Reply ข้ามเราเตอร์กลับมา...</span>`;
-          moveDot(packet, pcBPosR, routerPos, 700, () => {
-            moveDot(packet, routerPos, pcAPosR, 700, () => {
-              packet.setAttribute('opacity', '0');
-              resultText.innerHTML = `
-                <span class="text-emerald-400 font-bold">✅ Ping ข้าม Subnet สำเร็จสมบูรณ์!</span><br>
-                Reply from 192.168.2.10: bytes=32 time=4ms TTL=127 (TTL ลดลง 1 เมื่อผ่าน Router 1 Hop)
-              `;
-            });
-          });
-        });
-      });
-    }
-
-    function startDhcpDora() {
-      if (isDoraAnimating) return;
-      isDoraAnimating = true;
-
-      const btn = document.getElementById('btn-dhcp-start');
-      btn.disabled = true;
-      btn.classList.add('opacity-50');
-
-      const fly = document.getElementById('dhcp-fly-packet');
-      const stepD = document.getElementById('dora-step-D');
-      const stepO = document.getElementById('dora-step-O');
-      const stepR = document.getElementById('dora-step-R');
-      const stepA = document.getElementById('dora-step-A');
-      const clientIpBadge = document.getElementById('dhcp-client-ip');
-
-      // Reset styles
-      [stepD, stepO, stepR, stepA].forEach(el => {
-        el.className = 'p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-500 transition-all';
-      });
-      clientIpBadge.innerHTML = 'IP: 0.0.0.0 (กำลังค้นหา...)';
-
-      // 1. Discover
-      stepD.className = 'p-2 rounded-lg bg-sky-950 border border-sky-500 text-sky-300 font-bold scale-105 transition-all';
-      fly.className = 'inline-block px-3 py-1 rounded-full text-xs font-mono font-bold bg-sky-600 text-white opacity-100 transform -translate-x-12';
-      fly.innerText = 'DHCP Discover [Broadcast: 255.255.255.255]';
-
-      setTimeout(() => {
-        // Move to right (Server)
-        fly.classList.remove('-translate-x-12');
-        fly.classList.add('translate-x-12');
-
-        // 2. Offer
-        setTimeout(() => {
-          stepO.className = 'p-2 rounded-lg bg-amber-950 border border-amber-500 text-amber-300 font-bold scale-105 transition-all';
-          fly.className = 'inline-block px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-600 text-white opacity-100 transform translate-x-12';
-          fly.innerText = 'DHCP Offer [เสนอ IP: 192.168.1.50]';
-
-          setTimeout(() => {
-            fly.classList.remove('translate-x-12');
-            fly.classList.add('-translate-x-12');
-
-            // 3. Request
-            setTimeout(() => {
-              stepR.className = 'p-2 rounded-lg bg-indigo-950 border border-indigo-500 text-indigo-300 font-bold scale-105 transition-all';
-              fly.className = 'inline-block px-3 py-1 rounded-full text-xs font-mono font-bold bg-indigo-600 text-white opacity-100 transform -translate-x-12';
-              fly.innerText = 'DHCP Request [ขอใช้ IP: 192.168.1.50]';
-
-              setTimeout(() => {
-                fly.classList.remove('-translate-x-12');
-                fly.classList.add('translate-x-12');
-
-                // 4. ACK
-                setTimeout(() => {
-                  stepA.className = 'p-2 rounded-lg bg-emerald-950 border border-emerald-500 text-emerald-300 font-bold scale-105 transition-all';
-                  fly.className = 'inline-block px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-600 text-white opacity-100 transform translate-x-12';
-                  fly.innerText = 'DHCP ACK [อนุมัติสัญญาเช่า Lease 24 ชม.]';
-
-                  setTimeout(() => {
-                    fly.classList.remove('translate-x-12');
-                    fly.classList.add('-translate-x-12');
-
-                    setTimeout(() => {
-                      fly.style.opacity = '0';
-                      clientIpBadge.innerHTML = '<span class="text-emerald-400 font-bold">IP: 192.168.1.50 (Leased!)</span>';
-                      btn.disabled = false;
-                      btn.classList.remove('opacity-50');
-                      isDoraAnimating = false;
-                    }, 500);
-                  }, 600);
-                }, 600);
-              }, 600);
-            }, 600);
-          }, 600);
-        }, 600);
-      }, 600);
-    }
-
-    const dnsRecords = {
-      'www.ku.ac.th': { ip: '158.108.2.1', title: 'Kasetsart University Web Portal', desc: 'ยินดีต้อนรับสู่ระบบเครือข่ายมหาวิทยาลัยเกษตรศาสตร์', color: 'emerald' },
-      'ku.ac.th': { ip: '158.108.2.1', title: 'Kasetsart University Web Portal', desc: 'ยินดีต้อนรับสู่ระบบเครือข่ายมหาวิทยาลัยเกษตรศาสตร์', color: 'emerald' },
-      'www.google.com': { ip: '142.250.199.100', title: 'Google Search Engine', desc: 'ค้นหาข้อมูลและความรู้ทั่วโลกด้วยเสิร์ชเอนจินระดับโลก', color: 'sky' },
-      'google.com': { ip: '142.250.199.100', title: 'Google Search Engine', desc: 'ค้นหาข้อมูลและความรู้ทั่วโลกด้วยเสิร์ชเอนจินระดับโลก', color: 'sky' },
-      'test.local': { ip: '192.168.1.200', title: 'Internal Intranet Web Server', desc: 'เว็บเซิร์ฟเวอร์จำลองสำหรับทดสอบภายในแผนกไอที', color: 'indigo' }
+    // ----------------------------------------------------
+    // LAB 2: INTRA-LAN & ARP STEP-BY-STEP
+    // ----------------------------------------------------
+    let l2CurrentStep = 0;
+    const l2Coords = {
+      switch: { x: 300, y: 70 },
+      A: { x: 100, y: 220 },
+      B: { x: 300, y: 220 },
+      C: { x: 500, y: 220 }
     };
 
-    function browseUrl() {
-      const input = document.getElementById('browser-url-input');
-      const rawUrl = input.value.trim().toLowerCase().replace(/^https?:\/\//, '');
-      const statusLog = document.getElementById('dns-status-log');
-      const resolvedSpan = document.getElementById('dns-resolved-ip');
-      const viewport = document.getElementById('browser-viewport');
+    function l2SetSubnetMismatch() {
+      document.getElementById('l2-ip-c').value = '192.168.2.30';
+      document.getElementById('l2-dest').value = 'C';
+      document.getElementById('l2-status-banner').className = 'bg-amber-950/60 border border-amber-500/30 rounded-lg p-2.5 text-xs text-amber-200 flex items-center gap-2';
+      document.getElementById('l2-status-text').innerText = 'ตั้งค่า PC-C เป็น 192.168.2.30 (ต่าง Subnet กับ 192.168.1.0/24) พร้อมทดสอบการ Ping';
+    }
 
-      if (!rawUrl) return;
+    function l2StartStepByStep() {
+      const dest = document.getElementById('l2-dest').value;
+      const ipA = document.getElementById('l2-ip-a').value.trim();
+      const ipDest = (dest === 'B') ? document.getElementById('l2-ip-b').value.trim() : document.getElementById('l2-ip-c').value.trim();
 
-      statusLog.innerHTML = `<span class="text-amber-400 animate-pulse">1. ส่งคำขอ DNS Query (UDP Port 53) ไปยัง DNS Server 8.8.8.8...</span>`;
-      resolvedSpan.innerText = 'สืบค้นชื่อ...';
+      // Check Subnet mismatch
+      const netA = ipA.substring(0, ipA.lastIndexOf('.'));
+      const netDest = ipDest.substring(0, ipDest.lastIndexOf('.'));
+
+      if (netA !== netDest) {
+        document.getElementById('l2-status-banner').className = 'bg-rose-950/80 border border-rose-500/50 rounded-lg p-2.5 text-xs text-rose-200 flex items-center gap-2';
+        document.getElementById('l2-status-text').innerHTML = `<strong>เกิดข้อผิดพลาด:</strong> PC-A (${ipA}) และ Destination (${ipDest}) อยู่ต่าง Network ID กัน! Switch ไม่สามารถส่งต่อข้ามวงได้โดยไม่มี Gateway/Router`;
+        return;
+      }
+
+      l2CurrentStep = 1;
+      document.getElementById('l2-start-btn').disabled = true;
+      document.getElementById('l2-start-btn').classList.add('opacity-50', 'cursor-not-allowed');
+      document.getElementById('l2-next-btn').disabled = false;
+      document.getElementById('l2-next-btn').className = 'bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 shadow';
+
+      l2ExecuteStep(1);
+    }
+
+    function l2NextStep() {
+      l2CurrentStep++;
+      l2ExecuteStep(l2CurrentStep);
+    }
+
+    function l2ExecuteStep(step) {
+      const p1 = document.getElementById('l2-packet-1');
+      const p2 = document.getElementById('l2-packet-2');
+      const text1 = document.getElementById('l2-packet-text-1');
+      const text2 = document.getElementById('l2-packet-text-2');
+      const circle1 = document.getElementById('l2-packet-color-1');
+      const circle2 = document.getElementById('l2-packet-color-2');
+      const statusText = document.getElementById('l2-status-text');
+
+      if (step === 1) {
+        // Step 1: PC-A sends ARP Request to Switch
+        p1.style.display = 'block';
+        p1.setAttribute('transform', `translate(${l2Coords.A.x}, ${l2Coords.A.y})`);
+        circle1.setAttribute('fill', '#f97316');
+        text1.textContent = 'ARP';
+
+        statusText.innerHTML = `<strong>จังหวะที่ 1 (ARP Request):</strong> PC-A ไม่รู้ MAC Address ของปลายทาง จึงสร้าง ARP Request (Broadcast) ส่งเข้า Switch`;
+        setTimeout(() => {
+          p1.setAttribute('transform', `translate(${l2Coords.switch.x}, ${l2Coords.switch.y})`);
+          // Learn Port 1 MAC
+          document.getElementById('mac-port-1').innerText = '00-1A-2B-3C-4D-01';
+          document.getElementById('mac-tag-1').className = 'text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-bold';
+          document.getElementById('mac-tag-1').innerText = 'Learned';
+        }, 50);
+
+      } else if (step === 2) {
+        // Step 2: Switch broadcasts to PC-B and PC-C
+        statusText.innerHTML = `<strong>จังหวะที่ 2 (Switch Flooding/Broadcast):</strong> Switch กระจายเฟรม ARP Request ออกไปยังทุกพอร์ต (PC-B และ PC-C)`;
+        p2.style.display = 'block';
+        p2.setAttribute('transform', `translate(${l2Coords.switch.x}, ${l2Coords.switch.y})`);
+        circle2.setAttribute('fill', '#f97316');
+        text2.textContent = 'ARP';
+
+        setTimeout(() => {
+          p1.setAttribute('transform', `translate(${l2Coords.B.x}, ${l2Coords.B.y})`);
+          p2.setAttribute('transform', `translate(${l2Coords.C.x}, ${l2Coords.C.y})`);
+        }, 50);
+
+      } else if (step === 3) {
+        // Step 3: PC-C drops, PC-B responds with ARP Reply (Unicast)
+        statusText.innerHTML = `<strong>จังหวะที่ 3 (ARP Reply):</strong> PC-C ทิ้งแพ็กเก็ตเนื่องจาก IP ไม่ตรง ส่วน PC-B ตอบกลับ ARP Reply แบบ Unicast มายัง Switch`;
+        p2.style.display = 'none'; // PC-C drops
+
+        circle1.setAttribute('fill', '#10b981');
+        text1.textContent = 'ARP-Rep';
+        p1.setAttribute('transform', `translate(${l2Coords.B.x}, ${l2Coords.B.y})`);
+
+        setTimeout(() => {
+          p1.setAttribute('transform', `translate(${l2Coords.switch.x}, ${l2Coords.switch.y})`);
+          // Learn Port 2 MAC
+          document.getElementById('mac-port-2').innerText = '00-1A-2B-3C-4D-02';
+          document.getElementById('mac-tag-2').className = 'text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-bold';
+          document.getElementById('mac-tag-2').innerText = 'Learned';
+        }, 50);
+
+      } else if (step === 4) {
+        // Step 4: ICMP Ping Unicast between A and B
+        statusText.innerHTML = `<strong>จังหวะที่ 4 (ICMP Ping):</strong> PC-A และ PC-B ทราบ MAC Address กันแล้ว ICMP Echo วิ่งแบบ Unicast สำเร็จสมบูรณ์!`;
+        circle1.setAttribute('fill', '#38bdf8');
+        text1.textContent = 'ICMP';
+
+        p1.setAttribute('transform', `translate(${l2Coords.switch.x}, ${l2Coords.switch.y})`);
+        setTimeout(() => {
+          p1.setAttribute('transform', `translate(${l2Coords.A.x}, ${l2Coords.A.y})`);
+        }, 50);
+
+        // Finish step
+        document.getElementById('l2-next-btn').disabled = true;
+        document.getElementById('l2-next-btn').className = 'bg-slate-700 text-slate-400 cursor-not-allowed px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5';
+      }
+    }
+
+    function l2Reset() {
+      l2CurrentStep = 0;
+      document.getElementById('l2-packet-1').style.display = 'none';
+      document.getElementById('l2-packet-2').style.display = 'none';
+      document.getElementById('l2-start-btn').disabled = false;
+      document.getElementById('l2-start-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+      document.getElementById('l2-next-btn').disabled = true;
+      document.getElementById('l2-next-btn').className = 'bg-slate-700 text-slate-400 cursor-not-allowed px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5';
+
+      document.getElementById('l2-ip-a').value = '192.168.1.10';
+      document.getElementById('l2-ip-b').value = '192.168.1.20';
+      document.getElementById('l2-ip-c').value = '192.168.1.30';
+
+      document.getElementById('mac-port-1').innerText = '--:--:--:--:--:--';
+      document.getElementById('mac-tag-1').className = 'text-[10px] bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded';
+      document.getElementById('mac-tag-1').innerText = 'Empty';
+
+      document.getElementById('mac-port-2').innerText = '--:--:--:--:--:--';
+      document.getElementById('mac-tag-2').className = 'text-[10px] bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded';
+      document.getElementById('mac-tag-2').innerText = 'Empty';
+
+      document.getElementById('l2-status-banner').className = 'bg-indigo-950/60 border border-indigo-500/30 rounded-lg p-2.5 text-xs text-indigo-200 flex items-center gap-2';
+      document.getElementById('l2-status-text').innerText = 'พร้อมเริ่มต้นการทดลอง เลือก Source/Destination แล้วกด "Start Ping (Step-by-Step)"';
+    }
+
+    // ----------------------------------------------------
+    // LAB 3: ROUTER & DEFAULT GATEWAY
+    // ----------------------------------------------------
+    let l3RouterEnabled = true;
+
+    function l3ToggleRouter() {
+      const toggle = document.getElementById('l3-router-toggle');
+      l3RouterEnabled = toggle.checked;
+      const stateText = document.getElementById('l3-router-state-text');
+      const circle = document.getElementById('l3-router-circle');
+      if (l3RouterEnabled) {
+        stateText.innerText = 'ON (Enabled)';
+        stateText.className = 'text-xs font-medium text-emerald-400';
+        circle.setAttribute('stroke', '#10b981');
+      } else {
+        stateText.innerText = 'OFF (Shutdown)';
+        stateText.className = 'text-xs font-medium text-rose-400';
+        circle.setAttribute('stroke', '#f43F5e');
+      }
+    }
+
+    function l3ClearGateway() {
+      document.getElementById('l3-gwa').value = '';
+      document.getElementById('l3-status-desc').innerHTML = "<span class='text-rose-300'>ลบ Default Gateway ของ PC-A1 ออกแล้ว ให้ลองกดจำลองการส่ง Ping เพื่อสังเกตผล</span>";
+    }
+
+    function l3ResetFields() {
+      document.getElementById('l3-ipa').value = '192.168.1.10';
+      document.getElementById('l3-gwa').value = '192.168.1.1';
+      document.getElementById('l3-router-toggle').checked = true;
+      l3ToggleRouter();
+      document.getElementById('l3-packet').style.display = 'none';
+      document.getElementById('l3-log').innerText = 'Ready for simulation...';
+      document.getElementById('l3-log').className = 'text-emerald-400 mt-1';
+      document.getElementById('l3-status-desc').innerText = 'สังเกตค่า Default Gateway ของ PC-A1 หากถูกต้อง ซองข้อมูลจะวิ่งผ่าน Router ข้าม Subnet ได้';
+    }
+
+    function l3SimulatePing() {
+      const gwA = document.getElementById('l3-gwa').value.trim();
+      const ipA = document.getElementById('l3-ipa').value.trim();
+      const packet = document.getElementById('l3-packet');
+      const log = document.getElementById('l3-log');
+      const statusDesc = document.getElementById('l3-status-desc');
+
+      log.innerHTML = `Pinging 192.168.2.10 from ${ipA}...`;
+
+      if (!l3RouterEnabled) {
+        log.className = 'text-rose-400 mt-1';
+        log.innerHTML += "<br>Destination host unreachable (Router Interface is Administratively Down).";
+        statusDesc.innerText = 'เกิดข้อผิดพลาด: Router ปิดการทำงาน (Shutdown) ทำให้ไม่สามารถ Route แพ็กเก็ตข้ามเครือข่ายได้';
+        return;
+      }
+
+      if (gwA === '') {
+        // No Gateway Error (Manual Section 3.2 Question 1)
+        log.className = 'text-rose-400 mt-1';
+        log.innerHTML += "<br>Destination host unreachable: No default gateway configured. Host cannot resolve non-local destination 192.168.2.10.";
+        statusDesc.innerHTML = `<span class='text-rose-400 font-bold'>ข้อผิดพลาด:</span> PC-A1 ไม่ได้กำหนด Default Gateway จึงไม่รู้ว่าจะส่งแพ็กเก็ตออกจากเครือข่ายตนเองไปทางใด`;
+        return;
+      }
+
+      if (gwA === '192.168.2.1') {
+        // Invalid Gateway Subnet (Manual Section 3.2 Question 2)
+        log.className = 'text-rose-400 mt-1';
+        log.innerHTML += "<br>Invalid Default Gateway: Gateway IP 192.168.2.1 is not in the same local subnet as PC-A1 (192.168.1.0/24).";
+        statusDesc.innerHTML = `<span class='text-rose-400 font-bold'>ข้อผิดพลาด:</span> ไม่สามารถใช้ 192.168.2.1 เป็น Gateway ได้ เพราะ Gateway จะต้องอยู่ใน Subnet เดียวกันกับเครื่องลูกข่าย (192.168.1.0/24)`;
+        return;
+      }
+
+      if (gwA === '192.168.1.1') {
+        // Success Path (Manual Section 3.1)
+        packet.style.display = 'block';
+        packet.setAttribute('transform', 'translate(80, 180)');
+        statusDesc.innerHTML = "<strong>Step 1:</strong> PC-A1 ตรวจพบว่าปลายทางอยู่ต่าง Subnet จึงส่ง Frame ไปยัง Default Gateway (Router g0/0: 192.168.1.1)";
+
+        setTimeout(() => {
+          packet.setAttribute('transform', 'translate(160, 100)'); // Switch-A
+          setTimeout(() => {
+            packet.setAttribute('transform', 'translate(350, 100)'); // Router
+            statusDesc.innerHTML = "<strong>Step 2 (Router Rewrite):</strong> Router ทำการลดค่า TTL, เปลี่ยน Header MAC ต้นทาง-ปลายทางใหม่ แล้วส่งออกทาง g0/1";
+
+            setTimeout(() => {
+              packet.setAttribute('transform', 'translate(540, 100)'); // Switch-B
+              setTimeout(() => {
+                packet.setAttribute('transform', 'translate(620, 180)'); // PC-B1
+                statusDesc.innerHTML = "<strong class='text-emerald-400'>Step 3 (สำเร็จ):</strong> แพ็กเก็ตเดินทางถึง PC-B1 (192.168.2.10) ข้าม Subnet ได้สำเร็จสมบูรณ์!";
+                log.className = 'text-emerald-400 mt-1';
+                log.innerHTML += "<br>Reply from 192.168.2.10: bytes=32 time=2ms TTL=127 (Ping Success!)";
+              }, 400);
+            }, 400);
+          }, 400);
+        }, 300);
+      } else {
+        log.className = 'text-amber-400 mt-1';
+        log.innerHTML += "<br>Request timed out. Gateway unreachable.";
+      }
+    }
+
+    // ----------------------------------------------------
+    // LAB 4: CORE SERVICES (DHCP & DNS)
+    // ----------------------------------------------------
+    let l4DnsEnabled = true;
+    let l4HasIp = false;
+
+    function l4ToggleDns() {
+      l4DnsEnabled = !l4DnsEnabled;
+      const btn = document.getElementById('l4-dns-btn');
+      if (l4DnsEnabled) {
+        btn.innerText = 'ON';
+        btn.className = 'px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-600 text-white transition';
+      } else {
+        btn.innerText = 'OFF';
+        btn.className = 'px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-600 text-white transition';
+      }
+    }
+
+    function l4StartDORA() {
+      const packet = document.getElementById('l4-packet');
+      const label = document.getElementById('l4-packet-label');
+      const circle = document.getElementById('l4-packet-circle');
+
+      const dCard = document.getElementById('dora-d');
+      const oCard = document.getElementById('dora-o');
+      const rCard = document.getElementById('dora-r');
+      const aCard = document.getElementById('dora-a');
+
+      // Reset card highlights
+      [dCard, oCard, rCard, aCard].forEach(c => c.className = 'p-2 rounded border border-slate-800 bg-slate-900/60 text-slate-400');
+
+      packet.style.display = 'block';
+
+      // Step 1: D - Discover
+      label.textContent = 'D';
+      circle.setAttribute('fill', '#f59e0b');
+      packet.setAttribute('transform', 'translate(100, 95)');
+      dCard.className = 'p-2 rounded border border-amber-500 bg-amber-500/20 text-amber-300 font-semibold';
 
       setTimeout(() => {
-        const record = dnsRecords[rawUrl];
-        if (record) {
-          statusLog.innerHTML = `<span>2. ได้รับ DNS Response A Record &rarr; <span class="text-emerald-400 font-bold">${record.ip}</span> | กำลังส่ง HTTP GET (TCP 443)...</span>`;
-          resolvedSpan.innerText = `${rawUrl} &rarr; ${record.ip}`;
+        packet.setAttribute('transform', 'translate(545, 50)'); // 到达 DHCP Server
+
+        setTimeout(() => {
+          // Step 2: O - Offer
+          label.textContent = 'O';
+          circle.setAttribute('fill', '#38bdf8');
+          oCard.className = 'p-2 rounded border border-sky-500 bg-sky-500/20 text-sky-300 font-semibold';
+          packet.setAttribute('transform', 'translate(100, 95)'); // 回到 PC
 
           setTimeout(() => {
-            statusLog.innerHTML = `<span class="text-emerald-400">3. เชื่อมต่อ Web Server สำเร็จ (200 OK) ได้รับ HTML/CSS Content</span>`;
-            
-            // Render simulated clean web page
-            viewport.innerHTML = `
-              <div class="w-full max-w-lg mx-auto p-5 rounded-xl bg-slate-900 border border-slate-700 text-left space-y-3 shadow-xl">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                  <span class="text-xs font-mono text-${record.color}-400 font-bold flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-${record.color}-400"></span> ${rawUrl} (HTTP 200 OK)
-                  </span>
-                  <span class="text-[10px] text-slate-500 font-mono">IP: ${record.ip}</span>
+            // Step 3: R - Request
+            label.textContent = 'R';
+            circle.setAttribute('fill', '#a855f7');
+            rCard.className = 'p-2 rounded border border-purple-500 bg-purple-500/20 text-purple-300 font-semibold';
+            packet.setAttribute('transform', 'translate(545, 50)'); // ไป Server
+
+            setTimeout(() => {
+              // Step 4: A - ACK
+              label.textContent = 'A';
+              circle.setAttribute('fill', '#10b981');
+              aCard.className = 'p-2 rounded border border-emerald-500 bg-emerald-500/20 text-emerald-300 font-semibold';
+              packet.setAttribute('transform', 'translate(100, 95)'); // จบที่ PC
+
+              setTimeout(() => {
+                // Populate Config (Manual Section 3.1)
+                l4HasIp = true;
+                document.getElementById('l4-stat-ip').innerText = '192.168.1.55';
+                document.getElementById('l4-stat-mask').innerText = '255.255.255.0';
+                document.getElementById('l4-stat-gw').innerText = '192.168.1.1';
+                document.getElementById('l4-stat-dns').innerText = '192.168.1.2';
+                document.getElementById('l4-client-ip-badge').innerText = 'IP: 192.168.1.55';
+                packet.style.display = 'none';
+              }, 400);
+            }, 500);
+          }, 500);
+        }, 500);
+      }, 500);
+    }
+
+    function l4BrowseUrl() {
+      const url = document.getElementById('l4-url-bar').value.trim();
+      const display = document.getElementById('l4-web-display');
+
+      if (!l4HasIp) {
+        display.innerHTML = `
+          <div class="text-rose-600 font-medium text-center">
+            <i class="fa-solid fa-triangle-exclamation text-2xl mb-1"></i>
+            <p><strong>ไม่มีการเชื่อมต่อเครือข่าย:</strong> PC Client ยังไม่ได้รับ IP Address กรุณากด "Request IP (DHCP)" ก่อน</p>
+          </div>
+        `;
+        return;
+      }
+
+      display.innerHTML = `
+        <div class="text-slate-500 flex items-center gap-2">
+          <i class="fa-solid fa-spinner fa-spin"></i> กำลังร้องขอข้อมูล...
+        </div>
+      `;
+
+      setTimeout(() => {
+        if (url === 'http://192.168.1.2' || url === '192.168.1.2') {
+          // Direct IP access works regardless of DNS
+          display.innerHTML = `
+            <div class="w-full bg-slate-50 border border-slate-200 rounded p-3">
+              <div class="flex items-center justify-between border-b pb-2 mb-2">
+                <span class="font-bold text-emerald-700 text-sm"><i class="fa-solid fa-circle-check"></i> Network Lab Server (Direct IP Access)</span>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">HTTP 200 OK</span>
+              </div>
+              <p class="text-slate-600 text-xs">ยินดีต้อนรับสู่เว็บเซิร์ฟเวอร์จำลอง เข้าถึงผ่านหมายเลข IP: <strong>192.168.1.2</strong> ได้โดยตรง โดยไม่ต้องพึ่งพาระบบ DNS แปลงชื่อ</p>
+            </div>
+          `;
+        } else if (url === 'http://www.networklab.com' || url === 'www.networklab.com') {
+          if (l4DnsEnabled) {
+            display.innerHTML = `
+              <div class="w-full bg-slate-50 border border-slate-200 rounded p-3">
+                <div class="flex items-center justify-between border-b pb-2 mb-2">
+                  <span class="font-bold text-indigo-700 text-sm"><i class="fa-solid fa-globe"></i> www.networklab.com</span>
+                  <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">DNS Resolved ➡️ 192.168.1.2</span>
                 </div>
-                <h4 class="text-base font-bold text-white">${record.title}</h4>
-                <p class="text-xs text-slate-300 leading-relaxed">${record.desc}</p>
-                <div class="pt-2 flex items-center justify-between text-[11px] text-slate-400">
-                  <span>Server: Nginx/Linux Virtual Host</span>
-                  <span class="text-emerald-400">TLS 1.3 Encrypted</span>
-                </div>
+                <p class="text-slate-600 text-xs">แปลงชื่อโดเมนสำเร็จ! DNS Server ส่งค่า IP: <strong>192.168.1.2</strong> กลับมายังเบราว์เซอร์ และโหลดหน้าเว็บเพจสมบูรณ์</p>
               </div>
             `;
-          }, 600);
+          } else {
+            // DNS Failed (Manual Section 3.3)
+            display.innerHTML = `
+              <div class="text-rose-600 text-center">
+                <i class="fa-solid fa-circle-xmark text-3xl mb-1 text-rose-500"></i>
+                <p class="font-bold text-sm">This site can’t be reached</p>
+                <p class="text-xs text-slate-500 mt-1">DNS_PROBE_FINISHED_NXDOMAIN (DNS Service is OFF - ไม่สามารถแปลงชื่อโดเมนเป็นหมายเลข IP ได้)</p>
+              </div>
+            `;
+          }
         } else {
-          statusLog.innerHTML = `<span class="text-rose-400">DNS Error: ไม่พบชื่อโฮสต์ใน DNS Database (NXDOMAIN)</span>`;
-          resolvedSpan.innerText = 'NXDOMAIN';
-          viewport.innerHTML = `
-            <div class="text-center p-6 space-y-2">
-              <div class="text-rose-400 text-3xl font-mono font-bold">DNS_PROBE_FINISHED_NXDOMAIN</div>
-              <p class="text-slate-300 text-xs font-bold">ไม่สามารถเข้าถึงเว็บไซต์นี้ได้</p>
-              <p class="text-slate-500 text-xs">เซิร์ฟเวอร์ DNS ไม่พบ Record สำหรับโดเมน <strong>${rawUrl}</strong><br>(ลองพิมพ์: www.ku.ac.th หรือ www.google.com)</p>
+          display.innerHTML = `
+            <div class="text-amber-600 text-center">
+              <i class="fa-solid fa-magnifying-glass text-2xl mb-1"></i>
+              <p>ไม่พบโฮสต์ดังกล่าว กรุณาทดสอบด้วย <strong>http://www.networklab.com</strong> หรือ <strong>http://192.168.1.2</strong></p>
             </div>
           `;
         }
-      }, 700);
+      }, 500);
     }
 
-    // Allow Enter on browser input
-    document.getElementById('browser-url-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') browseUrl();
-    });
+    function l4Reset() {
+      l4HasIp = false;
+      l4DnsEnabled = true;
+      document.getElementById('l4-dns-btn').innerText = 'ON';
+      document.getElementById('l4-dns-btn').className = 'px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-600 text-white transition';
+      document.getElementById('l4-stat-ip').innerText = '0.0.0.0';
+      document.getElementById('l4-stat-mask').innerText = '0.0.0.0';
+      document.getElementById('l4-stat-gw').innerText = '0.0.0.0';
+      document.getElementById('l4-stat-dns').innerText = '0.0.0.0';
+      document.getElementById('l4-client-ip-badge').innerText = 'IP: 0.0.0.0';
+      document.getElementById('l4-packet').style.display = 'none';
+      ['dora-d', 'dora-o', 'dora-r', 'dora-a'].forEach(id => {
+        document.getElementById(id).className = 'p-2 rounded border border-slate-800 bg-slate-900/60 text-slate-400';
+      });
+      document.getElementById('l4-web-display').innerHTML = `
+        <div class="text-center text-slate-400">
+          <i class="fa-solid fa-globe text-3xl mb-2 text-slate-300"></i>
+          <p>พิมพ์ URL: <span class="font-mono text-indigo-600 font-semibold">http://www.networklab.com</span> หรือ <span class="font-mono text-indigo-600 font-semibold">http://192.168.1.2</span> แล้วกด Go</p>
+        </div>
+      `;
+    }
 
+    // Initialize View
     window.addEventListener('DOMContentLoaded', () => {
-      switchLab(1);
+      updateSidebar('lab1');
     });
   </script>
 </body>
