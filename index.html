@@ -568,19 +568,22 @@
             <svg id="lab4-svg" viewBox="0 0 540 280" class="w-full flex-1">
               <!-- Links -->
               <!-- PC (100, 140) to DHCP Server (380, 60) -->
-              <line x1="100" y1="140" x2="420" y2="60" stroke="#334155" stroke-width="2" stroke-dasharray="4,4" />
+              <line x1="110" y1="135" x2="420" y2="60" stroke="#334155" stroke-width="2" stroke-dasharray="4,4" />
               <!-- PC (100, 140) to DNS/Web Server (420, 220) -->
-              <line x1="100" y1="140" x2="420" y2="220" stroke="#334155" stroke-width="2" stroke-dasharray="4,4" />
+              <line x1="110" y1="135" x2="420" y2="220" stroke="#334155" stroke-width="2" stroke-dasharray="4,4" />
 
-              <!-- PC Client Node -->
-              <g transform="translate(40, 95)">
-                <rect width="130" height="90" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="2" />
-                <rect width="130" height="22" rx="8" fill="#1e293b" />
-                <text x="65" y="15" fill="#38bdf8" font-size="10" font-weight="bold" text-anchor="middle">PC Client</text>
-                <text id="lab4-ui-ip" x="8" y="38" fill="#cbd5e1" font-size="8" font-family="monospace">IP: 0.0.0.0 (Unassigned)</text>
-                <text id="lab4-ui-mask" x="8" y="51" fill="#94a3b8" font-size="8" font-family="monospace">Mask: 0.0.0.0</text>
-                <text id="lab4-ui-gw" x="8" y="64" fill="#94a3b8" font-size="8" font-family="monospace">GW: 0.0.0.0</text>
-                <text id="lab4-ui-dns" x="8" y="77" fill="#94a3b8" font-size="8" font-family="monospace">DNS: 0.0.0.0</text>
+              <!-- PC Client Node (Red circled container) -->
+              <g id="lab4-pc-box" transform="translate(30, 80)">
+                <rect width="150" height="110" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-width="2" class="transition-all duration-300 shadow-xl" />
+                <rect width="150" height="22" rx="10" fill="#1e293b" />
+                <text x="75" y="15" fill="#38bdf8" font-size="10.5" font-weight="bold" text-anchor="middle">PC Client</text>
+                
+                <!-- Status & Network Configuration Labels -->
+                <text id="lab4-ui-ip" x="10" y="37" fill="#cbd5e1" font-size="8" font-family="monospace">IPv4: 0.0.0.0 (Unassigned)</text>
+                <text id="lab4-ui-mask" x="10" y="52" fill="#94a3b8" font-size="8" font-family="monospace">Subnet: 0.0.0.0</text>
+                <text id="lab4-ui-gw" x="10" y="67" fill="#94a3b8" font-size="8" font-family="monospace">Gateway: 0.0.0.0</text>
+                <text id="lab4-ui-dhcp" x="10" y="82" fill="#94a3b8" font-size="8" font-family="monospace">DHCP Server: 0.0.0.0</text>
+                <text id="lab4-ui-dns" x="10" y="97" fill="#94a3b8" font-size="8" font-family="monospace">DNS Server: 0.0.0.0</text>
               </g>
 
               <!-- DHCP Server Node -->
@@ -733,6 +736,7 @@
         assignedIp: '0.0.0.0',
         assignedMask: '0.0.0.0',
         assignedGw: '0.0.0.0',
+        assignedDhcp: '0.0.0.0',
         assignedDns: '0.0.0.0'
       }
     };
@@ -1575,12 +1579,21 @@
       state.lab4.assignedIp = '0.0.0.0';
       state.lab4.assignedMask = '0.0.0.0';
       state.lab4.assignedGw = '0.0.0.0';
+      state.lab4.assignedDhcp = '0.0.0.0';
       state.lab4.assignedDns = '0.0.0.0';
 
-      document.getElementById('lab4-ui-ip').textContent = 'IP: 0.0.0.0 (Unassigned)';
-      document.getElementById('lab4-ui-mask').textContent = 'Mask: 0.0.0.0';
-      document.getElementById('lab4-ui-gw').textContent = 'GW: 0.0.0.0';
-      document.getElementById('lab4-ui-dns').textContent = 'DNS: 0.0.0.0';
+      const ipEl = document.getElementById('lab4-ui-ip');
+      ipEl.textContent = 'IPv4: 0.0.0.0 (Unassigned)';
+      ipEl.setAttribute('fill', '#cbd5e1');
+      ipEl.removeAttribute('font-weight');
+
+      document.getElementById('lab4-ui-mask').textContent = 'Subnet: 0.0.0.0';
+      document.getElementById('lab4-ui-gw').textContent = 'Gateway: 0.0.0.0';
+      document.getElementById('lab4-ui-dhcp').textContent = 'DHCP Server: 0.0.0.0';
+      document.getElementById('lab4-ui-dns').textContent = 'DNS Server: 0.0.0.0';
+
+      const pcBox = document.getElementById('lab4-pc-box').querySelector('rect');
+      pcBox.setAttribute('stroke', '#38bdf8');
 
       resetDoraPills();
       document.getElementById('lab4-status-text').textContent = 'เครื่อง PC Client รีเซ็ตกลับเป็น 0.0.0.0 (ยังไม่ได้รับ IP)';
@@ -1616,16 +1629,24 @@
       const doraPill = document.getElementById('lab4-dora-pill');
       resetDoraPills();
 
+      // Generate randomized IPv4 host octet within pool 192.168.1.100 - 192.168.1.200
+      const randomOctet = Math.floor(Math.random() * 99) + 101; // 101 - 199
+      const leasedIp = `192.168.1.${randomOctet}`;
+      const leasedMask = '255.255.255.0';
+      const leasedGw = '192.168.1.1';
+      const leasedDhcp = '192.168.1.254';
+      const leasedDns = '192.168.1.2';
+
       // Coordinates:
-      // PC: (100, 140)
+      // PC: (105, 135)
       // DHCP Server: (430, 60)
       // DNS/Web: (430, 220)
 
       // Step D: Discover
       doraPill.textContent = 'Step 1: DHCP Discover';
       document.getElementById('dora-card-d').className = 'p-1 rounded bg-sky-950 text-sky-300 border border-sky-500 font-bold';
-      statusText.innerHTML = `<strong>D (DHCPDISCOVER):</strong> PC Client กระจาย Broadcast (255.255.255.255) ค้นหาเซิร์ฟเวอร์ DHCP`;
-      setPacketPosLab4(100, 140, 'DISCOVER', '#38bdf8');
+      statusText.innerHTML = `<strong>D (DHCPDISCOVER):</strong> PC Client กระจาย Broadcast (255.255.255.255) ค้นหาเซิร์ฟเวอร์ DHCP ในเครือข่าย`;
+      setPacketPosLab4(105, 135, 'DISCOVER', '#38bdf8');
       playSound('arp');
       await new Promise(r => setTimeout(r, 700));
 
@@ -1635,19 +1656,19 @@
       // Step O: Offer
       doraPill.textContent = 'Step 2: DHCP Offer';
       document.getElementById('dora-card-o').className = 'p-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-500 font-bold';
-      statusText.innerHTML = `<strong>O (DHCPOFFER):</strong> DHCP Server เสนอชุดพารามิเตอร์ [IP: 192.168.1.100, GW: 192.168.1.1, DNS: 192.168.1.2]`;
+      statusText.innerHTML = `<strong>O (DHCPOFFER):</strong> DHCP Server เสนอชุดพารามิเตอร์ [<span class="text-emerald-400 font-bold">IP: ${leasedIp}</span>, GW: ${leasedGw}, DHCP: ${leasedDhcp}, DNS: ${leasedDns}]`;
       setPacketPosLab4(430, 60, 'OFFER', '#10b981');
       playSound('hop');
       await new Promise(r => setTimeout(r, 700));
 
-      setPacketPosLab4(100, 140, 'OFFER', '#10b981');
+      setPacketPosLab4(105, 135, 'OFFER', '#10b981');
       await new Promise(r => setTimeout(r, 900));
 
       // Step R: Request
       doraPill.textContent = 'Step 3: DHCP Request';
       document.getElementById('dora-card-r').className = 'p-1 rounded bg-amber-950 text-amber-300 border border-amber-500 font-bold';
-      statusText.innerHTML = `<strong>R (DHCPREQUEST):</strong> PC Client ตอบยืนยันขอใช้ IP 192.168.1.100 ที่ได้รับข้อเสนอ`;
-      setPacketPosLab4(100, 140, 'REQUEST', '#f59e0b');
+      statusText.innerHTML = `<strong>R (DHCPREQUEST):</strong> PC Client ตอบยืนยันขอใช้หมายเลข IP <span class="text-amber-300 font-bold">${leasedIp}</span> อย่างเป็นทางการ`;
+      setPacketPosLab4(105, 135, 'REQUEST', '#f59e0b');
       playSound('hop');
       await new Promise(r => setTimeout(r, 700));
 
@@ -1657,30 +1678,39 @@
       // Step A: ACK
       doraPill.textContent = 'Step 4: DHCP ACK';
       document.getElementById('dora-card-a').className = 'p-1 rounded bg-purple-950 text-purple-300 border border-purple-500 font-bold';
-      statusText.innerHTML = `<strong>A (DHCPACK):</strong> DHCP Server อนุมัติการเช่า (Lease Granted) PC Client ได้รับ IP พร้อมใช้งาน`;
+      statusText.innerHTML = `<strong>A (DHCPACK):</strong> DHCP Server อนุมัติการเช่า (Lease Granted) บันทึกพารามิเตอร์ลงเครื่อง PC Client สำเร็จ!`;
       setPacketPosLab4(430, 60, 'ACK', '#a855f7');
       playSound('hop');
       await new Promise(r => setTimeout(r, 700));
 
-      setPacketPosLab4(100, 140, 'ACK', '#a855f7');
+      setPacketPosLab4(105, 135, 'ACK', '#a855f7');
       playSound('success');
       await new Promise(r => setTimeout(r, 900));
 
       hidePacketLab4();
 
-      // Update Client UI with assigned parameters
+      // Update Client UI with leased parameters inside the red-circled box
       state.lab4.dhcpObtained = true;
-      state.lab4.assignedIp = '192.168.1.100';
-      state.lab4.assignedMask = '255.255.255.0';
-      state.lab4.assignedGw = '192.168.1.1';
-      state.lab4.assignedDns = '192.168.1.2';
+      state.lab4.assignedIp = leasedIp;
+      state.lab4.assignedMask = leasedMask;
+      state.lab4.assignedGw = leasedGw;
+      state.lab4.assignedDhcp = leasedDhcp;
+      state.lab4.assignedDns = leasedDns;
 
-      document.getElementById('lab4-ui-ip').innerHTML = `<span class="text-emerald-400 font-bold">IP: 192.168.1.100</span>`;
-      document.getElementById('lab4-ui-mask').innerHTML = `<span class="text-slate-300">Mask: 255.255.255.0</span>`;
-      document.getElementById('lab4-ui-gw').innerHTML = `<span class="text-amber-300">GW: 192.168.1.1</span>`;
-      document.getElementById('lab4-ui-dns').innerHTML = `<span class="text-sky-300">DNS: 192.168.1.2</span>`;
+      const ipEl = document.getElementById('lab4-ui-ip');
+      ipEl.textContent = `IPv4: ${leasedIp}`;
+      ipEl.setAttribute('fill', '#22c55e');
+      ipEl.setAttribute('font-weight', 'bold');
 
-      showToast('PC ได้รับค่า IP จาก DHCP สำเร็จแล้ว!', 'success');
+      document.getElementById('lab4-ui-mask').textContent = `Subnet: ${leasedMask}`;
+      document.getElementById('lab4-ui-gw').textContent = `Gateway: ${leasedGw}`;
+      document.getElementById('lab4-ui-dhcp').textContent = `DHCP Server: ${leasedDhcp}`;
+      document.getElementById('lab4-ui-dns').textContent = `DNS Server: ${leasedDns}`;
+
+      const pcBox = document.getElementById('lab4-pc-box').querySelector('rect');
+      pcBox.setAttribute('stroke', '#22c55e');
+
+      showToast(`PC ได้รับ IP สุ่ม: ${leasedIp} สำเร็จเรียบร้อย!`, 'success');
       state.lab4.isSimulating = false;
     }
 
